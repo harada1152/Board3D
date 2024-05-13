@@ -28,7 +28,7 @@ public class MoveManager : MonoBehaviour
                 if(clickedGameObject.CompareTag("masu")&&select)
                 {
                     pos=clickedGameObject.transform.position;
-                    komaObject.transform.position=new Vector3(pos.x, 1.0f, pos.z);
+                    komaObject.transform.position=new Vector3(pos.x, pos.y + 0.9f, pos.z);
 
                     Debug.Log(komaObject.name);//ゲームオブジェクトの名前を出力
 
