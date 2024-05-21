@@ -23,7 +23,7 @@ public class BoardManager : MonoBehaviour
     {
         RandomBridge();
 
-        Placement();
+        InitializeBoard();
 
     }
 
@@ -33,7 +33,7 @@ public class BoardManager : MonoBehaviour
 
     }
 
-    void Placement()
+    void InitializeBoard()
     {
         Vector3 pos = new Vector3();
 
@@ -84,27 +84,27 @@ public class BoardManager : MonoBehaviour
                 else if (infoColumns[i].infoRows[j] == "Com2")
                 {
                     pos.y = 1.2f;
-                    Instantiate(CommanderPrefab[1], pos, Quaternion.identity);
+                    Instantiate(CommanderPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
                 }
                 else if (infoColumns[i].infoRows[j] == "Sni2")
                 {
                     pos.y = 0.92f;
-                    Instantiate(SniperPrefab[1], pos, Quaternion.identity);
+                    Instantiate(SniperPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
                 }
                 else if (infoColumns[i].infoRows[j] == "Mac2")
                 {
                     pos.y = 0.96f;
-                    Instantiate(MachineGunPrefab[1], pos, Quaternion.identity);
+                    Instantiate(MachineGunPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
                 }
                 else if (infoColumns[i].infoRows[j] == "Ass2")
                 {
                     pos.y = 0.96f;
-                    Instantiate(AssaultPrefab[1], pos, Quaternion.identity);
+                    Instantiate(AssaultPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
                 }
                 else if (infoColumns[i].infoRows[j] == "Gre2")
                 {
                     pos.y = 0.96f;
-                    Instantiate(GrenadePrefab[1], pos, Quaternion.identity);
+                    Instantiate(GrenadePrefab[1], pos, Quaternion.Euler(0, 180f, 0));
                 }
             }
         }
@@ -137,6 +137,7 @@ public class BoardManager : MonoBehaviour
             }
             pos[i] = tileColumns[4].tileRows[num[i]].transform.position;
             pos[i].y = 0.6f;
+            infoColumns[4].infoRows[num[i]] = "";
             Instantiate(bridgePrefab, pos[i], Quaternion.identity);
         }
     }
