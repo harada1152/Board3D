@@ -9,6 +9,11 @@ namespace UI
         void Update()
         {
             UIManager.Instance.timeLimitBarManager.TimeLimitBar();
+            // ターンポップアップオブザーバーチェック用コード
+            if(Input.GetMouseButtonUp(0))
+            {
+                UIManager.Instance.currentTurn = "AI";
+            }
         }
     }
 }
