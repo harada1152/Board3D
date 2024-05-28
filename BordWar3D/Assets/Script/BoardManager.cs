@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using Unity.VisualScripting;
-using Unity.VisualScripting.FullSerializer.Internal;
 using UnityEngine;
+using System;
+using Random = UnityEngine.Random;
+using DG.Tweening;
 
 public class BoardManager : MonoBehaviour
 {
-    [SerializeField] List<Column> tileColumns = new List<Column>();
-    [SerializeField] List<BoardInfo> infoColumns = new List<BoardInfo>();
+    public static BoardManager Instance;
+    [SerializeField] List<Column> tileRows = new List<Column>();
+    [SerializeField] List<BoardInfo> infoRows = new List<BoardInfo>();
     [SerializeField] GameObject bridgePrefab;
     [SerializeField] GameObject RockPrefab;
     [SerializeField] GameObject[] CommanderPrefab = new GameObject[2];
@@ -17,6 +17,13 @@ public class BoardManager : MonoBehaviour
     [SerializeField] GameObject[] MachineGunPrefab = new GameObject[2];
     [SerializeField] GameObject[] AssaultPrefab = new GameObject[2];
     [SerializeField] GameObject[] GrenadePrefab = new GameObject[2];
+    private string[] playerPieceName = new string[]{"Assault1_A","Assault1_B","Commander1","Sniper1","Grenade1","MachineGun1"};
+    private string[] enemyPieceName = new string[]{"Assault2_A","Assault2_B","Commander2","Sniper2","Grenade2","MachineGun2"};
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -32,76 +39,167 @@ public class BoardManager : MonoBehaviour
     {
 
     }
+    //選んだ駒は自分の駒か？
+    public void CheckPlayerSelect(int x, int y)
+    {
+        Debug.Log(infoRows[8-y].infoColumns[x]);
+        int num=Array.IndexOf(playerPieceName,infoRows[8-y].infoColumns[x]);
+        if (0 <num )
+        {
+            Debug.Log("Select=true");
+            GameManager.Instance.select = true;
+        }
+    }
+
+    public void CheckEnemySelect(int x, int y)
+    {
+        int num=Array.IndexOf(enemyPieceName,infoRows[8-y].infoColumns[x]);
+        if (0 <num )
+        {
+            Debug.Log("Select=true");
+            GameManager.Instance.select = true;
+        }
+    }
+    //移動できるかの判定
+    //x1,y2=移動前の座標、x2,y2=移動後の座標
+    public void CheckPlayerMoveLegality(int x1, int y1, int x2, int y2)
+    {
+        bool error = false;
+        //移動先に自分の駒がいないか？
+        Debug.Log(x1+" "+y1+" "+x2+" "+x2);
+        for (int i = 0; i < 6; i++)
+        {
+            if (infoRows[8-y2].infoColumns[x2] == playerPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock")
+            {
+                error = true;
+                GameManager.Instance.select=false;
+                Debug.Log("error!!");
+            }
+        }
+        //問題がなければinfoを書き換える
+        if (!error)
+        {
+            infoRows[8-y2].infoColumns[x2]=infoRows[8-y1].infoColumns[x1];
+            infoRows[8-y1].infoColumns[x1]="";
+            Debug.Log("移動しました！");
+        }
+    }
+
+    public void CheckEnemyMoveLegality(int x1, int y1, int x2, int y2)
+    {
+       bool error = false;
+        //移動先に自分の駒がいないか？
+        
+        Debug.Log(x1+" "+y1+" "+x2+" "+x2);
+        for (int i = 0; i < 6; i++)
+        {
+            if (infoRows[8-y2].infoColumns[x2] == enemyPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock")
+            {
+                error = true;
+                GameManager.Instance.select=false;
+                Debug.Log("error!!");
+            }
+        }
+        //問題がなければinfoを書き換える
+        if (!error)
+        {
+            infoRows[8-y2].infoColumns[x2]=infoRows[8-y1].infoColumns[x1];
+            infoRows[8-y1].infoColumns[x1]="";
+            Debug.Log("移動しました！");
+        }
+    }
+
+    public void PieceMoveAnimation(int x, int y)
+    {
+        GameObject obj=GameObject.Find(infoRows[8-y].infoColumns[x]+"(Clone)");
+        Vector3 pos= tileRows[8-y].tileColumns[x].transform.position; 
+        Vector3 objPos= obj.transform.position;
+
+        obj.transform.DOPath(
+            new[]
+            {
+                new Vector3((pos.x+objPos.x)/2,2f,(pos.z+objPos.z)/2),
+                new Vector3(pos.x,objPos.y,pos.z)
+            },
+            1f, PathType.CatmullRom)
+            .SetEase(Ease.OutSine);
+    }
 
     void InitializeBoard()
     {
         Vector3 pos = new Vector3();
 
-        for (int i = 0; i < infoColumns.Count; i++)
+        for (int i = 0; i < infoRows.Count; i++)
         {
-            for (int j = 0; j < infoColumns[i].infoRows.Count; j++)
+            for (int j = 0; j < infoRows[i].infoColumns.Count; j++)
             {
-                pos = tileColumns[i].tileRows[j].transform.position;
+                pos = tileRows[i].tileColumns[j].transform.position;
 
-                //引数内文字列は略称、1,2で1P,2Pカラーを差別化
+                //1,2で1P,2Pカラーを差別化
+                //突撃兵(Assault)は複数いるのでIDを振ってます
                 //1P
-                //Rock=Roc
-                if (infoColumns[i].infoRows[j] == "Roc")
+                if (infoRows[i].infoColumns[j] == "Rock")
                 {
                     pos.y = 0.86f;
                     Instantiate(RockPrefab, pos, Quaternion.identity);
                 }
-                //Commander=Com
-                else if (infoColumns[i].infoRows[j] == "Com1")
+                else if (infoRows[i].infoColumns[j] == "Commander1")
                 {
                     pos.y = 1.2f;
                     Instantiate(CommanderPrefab[0], pos, Quaternion.identity);
                 }
-                //Sniper=Sni
-                else if (infoColumns[i].infoRows[j] == "Sni1")
+                else if (infoRows[i].infoColumns[j] == "Sniper1")
                 {
                     pos.y = 0.92f;
                     Instantiate(SniperPrefab[0], pos, Quaternion.identity);
                 }
-                //MachineGun=Mac
-                else if (infoColumns[i].infoRows[j] == "Mac1")
+                else if (infoRows[i].infoColumns[j] == "MachineGun1")
                 {
                     pos.y = 0.96f;
                     Instantiate(MachineGunPrefab[0], pos, Quaternion.identity);
                 }
-                //Assault=Ass
-                else if (infoColumns[i].infoRows[j] == "Ass1")
+                else if (infoRows[i].infoColumns[j] == "Assault1_A")
                 {
                     pos.y = 0.96f;
                     Instantiate(AssaultPrefab[0], pos, Quaternion.identity);
                 }
-                else if (infoColumns[i].infoRows[j] == "Gre1")
+                else if (infoRows[i].infoColumns[j] == "Assault1_B")
+                {
+                    pos.y = 0.96f;
+                    Instantiate(AssaultPrefab[1], pos, Quaternion.identity);
+                }
+                else if (infoRows[i].infoColumns[j] == "Grenade1")
                 {
                     pos.y = 0.96f;
                     Instantiate(GrenadePrefab[0], pos, Quaternion.identity);
                 }
                 //2P
-                else if (infoColumns[i].infoRows[j] == "Com2")
+                else if (infoRows[i].infoColumns[j] == "Commander2")
                 {
                     pos.y = 1.2f;
                     Instantiate(CommanderPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
                 }
-                else if (infoColumns[i].infoRows[j] == "Sni2")
+                else if (infoRows[i].infoColumns[j] == "Sniper2")
                 {
                     pos.y = 0.92f;
                     Instantiate(SniperPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
                 }
-                else if (infoColumns[i].infoRows[j] == "Mac2")
+                else if (infoRows[i].infoColumns[j] == "MachineGun2")
                 {
                     pos.y = 0.96f;
                     Instantiate(MachineGunPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
                 }
-                else if (infoColumns[i].infoRows[j] == "Ass2")
+                else if (infoRows[i].infoColumns[j] == "Assault2_A")
                 {
                     pos.y = 0.96f;
-                    Instantiate(AssaultPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
+                    Instantiate(AssaultPrefab[2], pos, Quaternion.Euler(0, 180f, 0));
                 }
-                else if (infoColumns[i].infoRows[j] == "Gre2")
+                else if (infoRows[i].infoColumns[j] == "Assault2_B")
+                {
+                    pos.y = 0.96f;
+                    Instantiate(AssaultPrefab[3], pos, Quaternion.Euler(0, 180f, 0));
+                }
+                else if (infoRows[i].infoColumns[j] == "Grenade2")
                 {
                     pos.y = 0.96f;
                     Instantiate(GrenadePrefab[1], pos, Quaternion.Euler(0, 180f, 0));
@@ -135,9 +233,9 @@ public class BoardManager : MonoBehaviour
             {
                 num[i] += 2;
             }
-            pos[i] = tileColumns[4].tileRows[num[i]].transform.position;
+            pos[i] = tileRows[4].tileColumns[num[i]].transform.position;
             pos[i].y = 0.6f;
-            infoColumns[4].infoRows[num[i]] = "";
+            infoRows[4].infoColumns[num[i]] = "";
             Instantiate(bridgePrefab, pos[i], Quaternion.identity);
         }
     }
@@ -148,11 +246,11 @@ public class BoardManager : MonoBehaviour
 [System.Serializable]
 public class Column
 {
-    public List<GameObject> tileRows;
+    public List<GameObject> tileColumns;
 }
 
 [System.Serializable]
 public class BoardInfo
 {
-    public List<string> infoRows;
+    public List<string> infoColumns;
 }
