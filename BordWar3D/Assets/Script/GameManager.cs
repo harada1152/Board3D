@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public enum GameState
@@ -13,8 +14,9 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     GameObject clickedGameObject;//クリックされたゲームオブジェクトを代入する変数
-
     public GameState currentState;
+
+    public GameConst.TurnPhase turnPhese;
 
     public bool select = false;
     public bool checkComp = false;
@@ -35,17 +37,42 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         GetPlayerInput();
+
+        SetTurnPhese();
     }
 
     public void SetCurrentTurn(GameState newTurn)
     {
         currentState = newTurn;
 
-        switch (currentState)
-        {
-            case GameState.PLAYERTURN:
+        Debug.Log(newTurn);
 
-                break;
+
+    }
+
+    public void SetTurnPhese()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            switch (turnPhese)
+            {
+                case GameConst.TurnPhase.Start:
+                    Debug.Log("TurnPhese:Action");
+                    turnPhese = GameConst.TurnPhase.Action;
+                    break;
+                case GameConst.TurnPhase.Action:
+                    Debug.Log("TurnPhese:End");
+                    turnPhese = GameConst.TurnPhase.End;
+                    break;
+                case GameConst.TurnPhase.End:
+                    Debug.Log("TurnPhese:Next");
+                    turnPhese = GameConst.TurnPhase.Next;
+                    break;
+                case GameConst.TurnPhase.Next:
+                    Debug.Log("TurnPhese:Start");
+                    turnPhese = GameConst.TurnPhase.Start;
+                    break;
+            }
         }
     }
 
@@ -72,7 +99,7 @@ public class GameManager : MonoBehaviour
                     break;
 
                 case GameState.ENEMYTURN:
-                    BoardManager.Instance.CheckEnemySelect(basePosy, basePosx);
+                    BoardManager.Instance.CheckEnemySelect(basePosx, basePosy);
                     break;
             }
         }
@@ -85,14 +112,28 @@ public class GameManager : MonoBehaviour
                 case GameState.PLAYERTURN:
                     Debug.Log("移動前" + (8 - basePosy) + " " + basePosx + " 移動後 " + (8 - movePosy) + " " + movePosx);
                     BoardManager.Instance.CheckPlayerMoveLegality(basePosx, basePosy, movePosx, movePosy);
+                    if (BoardManager.Instance.error)
+                    {
+                        BoardManager.Instance.error=false;
+                        select = false;
+                        break;
+                    }
                     if (select) { BoardManager.Instance.PieceMoveAnimation(movePosx, movePosy); }
                     select = false;
                     Debug.Log("select=false");
+                    SetCurrentTurn(GameState.ENEMYTURN);
                     break;
                 case GameState.ENEMYTURN:
                     BoardManager.Instance.CheckEnemyMoveLegality(basePosx, basePosy, movePosx, movePosy);
-                    BoardManager.Instance.PieceMoveAnimation(movePosx, movePosy);
+                    if (BoardManager.Instance.error)
+                    {
+                        BoardManager.Instance.error=false;
+                        select = false;
+                        break;
+                    }
+                    if (select) { BoardManager.Instance.PieceMoveAnimation(movePosx, movePosy); }
                     select = false;
+                    SetCurrentTurn(GameState.PLAYERTURN);
 
                     break;
             }
@@ -117,5 +158,6 @@ public class GameManager : MonoBehaviour
 
         return false;
     }
+
 }
 

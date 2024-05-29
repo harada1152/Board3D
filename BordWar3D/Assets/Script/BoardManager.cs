@@ -8,6 +8,8 @@ using DG.Tweening;
 public class BoardManager : MonoBehaviour
 {
     public static BoardManager Instance;
+
+    public GameObject deathObj;
     [SerializeField] List<Column> tileRows = new List<Column>();
     [SerializeField] List<BoardInfo> infoRows = new List<BoardInfo>();
     [SerializeField] GameObject bridgePrefab;
@@ -19,6 +21,8 @@ public class BoardManager : MonoBehaviour
     [SerializeField] GameObject[] GrenadePrefab = new GameObject[2];
     private string[] playerPieceName = new string[]{"Assault1_A","Assault1_B","Commander1","Sniper1","Grenade1","MachineGun1"};
     private string[] enemyPieceName = new string[]{"Assault2_A","Assault2_B","Commander2","Sniper2","Grenade2","MachineGun2"};
+
+    public bool error;
 
     void Awake()
     {
@@ -43,8 +47,8 @@ public class BoardManager : MonoBehaviour
     public void CheckPlayerSelect(int x, int y)
     {
         Debug.Log(infoRows[8-y].infoColumns[x]);
-        int num=Array.IndexOf(playerPieceName,infoRows[8-y].infoColumns[x]);
-        if (0 <num )
+        int num=Array.IndexOf(playerPieceName,infoRows[8-y].infoColumns[x])+1;
+        if (0 <num)
         {
             Debug.Log("Select=true");
             GameManager.Instance.select = true;
@@ -53,7 +57,8 @@ public class BoardManager : MonoBehaviour
 
     public void CheckEnemySelect(int x, int y)
     {
-        int num=Array.IndexOf(enemyPieceName,infoRows[8-y].infoColumns[x]);
+        Debug.Log(infoRows[8-y].infoColumns[x]);
+        int num=Array.IndexOf(enemyPieceName,infoRows[8-y].infoColumns[x])+1;
         if (0 <num )
         {
             Debug.Log("Select=true");
@@ -64,16 +69,23 @@ public class BoardManager : MonoBehaviour
     //x1,y2=移動前の座標、x2,y2=移動後の座標
     public void CheckPlayerMoveLegality(int x1, int y1, int x2, int y2)
     {
-        bool error = false;
         //移動先に自分の駒がいないか？
         Debug.Log(x1+" "+y1+" "+x2+" "+x2);
         for (int i = 0; i < 6; i++)
         {
-            if (infoRows[8-y2].infoColumns[x2] == playerPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock")
+            if (infoRows[8-y2].infoColumns[x2] == playerPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock"
+            ||x1==x2&&y1==y2)
             {
                 error = true;
                 GameManager.Instance.select=false;
                 Debug.Log("error!!");
+            }
+        }
+        for (int i = 0; i < 6; i++)
+        {
+            if(infoRows[8-y2].infoColumns[x2] == enemyPieceName[i])
+            {
+                deathObj=GameObject.Find(infoRows[8-y2].infoColumns[x2]+"(Clone)");
             }
         }
         //問題がなければinfoを書き換える
@@ -87,17 +99,25 @@ public class BoardManager : MonoBehaviour
 
     public void CheckEnemyMoveLegality(int x1, int y1, int x2, int y2)
     {
-       bool error = false;
+
         //移動先に自分の駒がいないか？
         
         Debug.Log(x1+" "+y1+" "+x2+" "+x2);
         for (int i = 0; i < 6; i++)
         {
-            if (infoRows[8-y2].infoColumns[x2] == enemyPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock")
+            if (infoRows[8-y2].infoColumns[x2] == enemyPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock"
+            ||x1==x2&&y1==y2)
             {
                 error = true;
                 GameManager.Instance.select=false;
                 Debug.Log("error!!");
+            }
+        }
+        for (int i = 0; i < 6; i++)
+        {
+            if(infoRows[8-y2].infoColumns[x2] == playerPieceName[i])
+            {
+                deathObj=GameObject.Find(infoRows[8-y2].infoColumns[x2]+"(Clone)");
             }
         }
         //問題がなければinfoを書き換える
@@ -122,7 +142,11 @@ public class BoardManager : MonoBehaviour
                 new Vector3(pos.x,objPos.y,pos.z)
             },
             1f, PathType.CatmullRom)
-            .SetEase(Ease.OutSine);
+            .SetEase(Ease.OutSine)
+            .OnComplete(()=>{
+                Destroy(deathObj);
+            });
+        
     }
 
     void InitializeBoard()

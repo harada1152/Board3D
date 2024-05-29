@@ -13,4 +13,12 @@ public static class GameConst
         PieceMoveAnimation,       // マス移動アニメーション
         Ended                    // 終了
     }
+
+    public enum TurnPhase
+    {
+        Start,
+        Action,
+        End,
+        Next,
+    }
 }
