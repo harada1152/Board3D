@@ -19,8 +19,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] GameObject[] MachineGunPrefab = new GameObject[2];
     [SerializeField] GameObject[] AssaultPrefab = new GameObject[2];
     [SerializeField] GameObject[] GrenadePrefab = new GameObject[2];
-    private string[] playerPieceName = new string[]{"Assault1_A","Assault1_B","Commander1","Sniper1","Grenade1","MachineGun1"};
-    private string[] enemyPieceName = new string[]{"Assault2_A","Assault2_B","Commander2","Sniper2","Grenade2","MachineGun2"};
+    
 
     public bool error;
 
@@ -47,7 +46,7 @@ public class BoardManager : MonoBehaviour
     public void CheckPlayerSelect(int x, int y)
     {
         Debug.Log(infoRows[8-y].infoColumns[x]);
-        int num=Array.IndexOf(playerPieceName,infoRows[8-y].infoColumns[x])+1;
+        int num=Array.IndexOf(PieceManager.Instance.playerPieceName,infoRows[8-y].infoColumns[x])+1;
         if (0 <num)
         {
             Debug.Log("Select=true");
@@ -58,7 +57,7 @@ public class BoardManager : MonoBehaviour
     public void CheckEnemySelect(int x, int y)
     {
         Debug.Log(infoRows[8-y].infoColumns[x]);
-        int num=Array.IndexOf(enemyPieceName,infoRows[8-y].infoColumns[x])+1;
+        int num=Array.IndexOf(PieceManager.Instance.enemyPieceName,infoRows[8-y].infoColumns[x])+1;
         if (0 <num )
         {
             Debug.Log("Select=true");
@@ -73,7 +72,7 @@ public class BoardManager : MonoBehaviour
         Debug.Log(x1+" "+y1+" "+x2+" "+x2);
         for (int i = 0; i < 6; i++)
         {
-            if (infoRows[8-y2].infoColumns[x2] == playerPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock"
+            if (infoRows[8-y2].infoColumns[x2] == PieceManager.Instance.playerPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock"
             ||x1==x2&&y1==y2)
             {
                 error = true;
@@ -83,7 +82,7 @@ public class BoardManager : MonoBehaviour
         }
         for (int i = 0; i < 6; i++)
         {
-            if(infoRows[8-y2].infoColumns[x2] == enemyPieceName[i])
+            if(infoRows[8-y2].infoColumns[x2] == PieceManager.Instance.enemyPieceName[i])
             {
                 deathObj=GameObject.Find(infoRows[8-y2].infoColumns[x2]+"(Clone)");
             }
@@ -105,7 +104,7 @@ public class BoardManager : MonoBehaviour
         Debug.Log(x1+" "+y1+" "+x2+" "+x2);
         for (int i = 0; i < 6; i++)
         {
-            if (infoRows[8-y2].infoColumns[x2] == enemyPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock"
+            if (infoRows[8-y2].infoColumns[x2] == PieceManager.Instance.enemyPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock"
             ||x1==x2&&y1==y2)
             {
                 error = true;
@@ -115,7 +114,7 @@ public class BoardManager : MonoBehaviour
         }
         for (int i = 0; i < 6; i++)
         {
-            if(infoRows[8-y2].infoColumns[x2] == playerPieceName[i])
+            if(infoRows[8-y2].infoColumns[x2] == PieceManager.Instance.playerPieceName[i])
             {
                 deathObj=GameObject.Find(infoRows[8-y2].infoColumns[x2]+"(Clone)");
             }
