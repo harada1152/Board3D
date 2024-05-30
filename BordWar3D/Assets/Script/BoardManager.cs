@@ -19,7 +19,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] GameObject[] MachineGunPrefab = new GameObject[2];
     [SerializeField] GameObject[] AssaultPrefab = new GameObject[2];
     [SerializeField] GameObject[] GrenadePrefab = new GameObject[2];
-    
+
 
     public bool error;
 
@@ -45,9 +45,9 @@ public class BoardManager : MonoBehaviour
     //選んだ駒は自分の駒か？
     public void CheckPlayerSelect(int x, int y)
     {
-        Debug.Log(infoRows[8-y].infoColumns[x]);
-        int num=Array.IndexOf(PieceManager.Instance.playerPieceName,infoRows[8-y].infoColumns[x])+1;
-        if (0 <num)
+        Debug.Log(infoRows[8 - y].infoColumns[x]);
+        int num = Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - y].infoColumns[x]) + 1;
+        if (0 < num)
         {
             Debug.Log("Select=true");
             GameManager.Instance.select = true;
@@ -56,9 +56,9 @@ public class BoardManager : MonoBehaviour
 
     public void CheckEnemySelect(int x, int y)
     {
-        Debug.Log(infoRows[8-y].infoColumns[x]);
-        int num=Array.IndexOf(PieceManager.Instance.enemyPieceName,infoRows[8-y].infoColumns[x])+1;
-        if (0 <num )
+        Debug.Log(infoRows[8 - y].infoColumns[x]);
+        int num = Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - y].infoColumns[x]) + 1;
+        if (0 < num)
         {
             Debug.Log("Select=true");
             GameManager.Instance.select = true;
@@ -69,29 +69,29 @@ public class BoardManager : MonoBehaviour
     public void CheckPlayerMoveLegality(int x1, int y1, int x2, int y2)
     {
         //移動先に自分の駒がいないか？
-        Debug.Log(x1+" "+y1+" "+x2+" "+x2);
+        Debug.Log(x1 + " " + y1 + " " + x2 + " " + x2);
         for (int i = 0; i < 6; i++)
         {
-            if (infoRows[8-y2].infoColumns[x2] == PieceManager.Instance.playerPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock"
-            ||x1==x2&&y1==y2)
+            if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.playerPieceName[i] || infoRows[8 - y2].infoColumns[x2] == "River" || infoRows[8 - y2].infoColumns[x2] == "Rock"
+            || x1 == x2 && y1 == y2)
             {
                 error = true;
-                GameManager.Instance.select=false;
+                GameManager.Instance.select = false;
                 Debug.Log("error!!");
             }
         }
         for (int i = 0; i < 6; i++)
         {
-            if(infoRows[8-y2].infoColumns[x2] == PieceManager.Instance.enemyPieceName[i])
+            if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.enemyPieceName[i])
             {
-                deathObj=GameObject.Find(infoRows[8-y2].infoColumns[x2]+"(Clone)");
+                deathObj = GameObject.Find(infoRows[8 - y2].infoColumns[x2] + "(Clone)");
             }
         }
         //問題がなければinfoを書き換える
         if (!error)
         {
-            infoRows[8-y2].infoColumns[x2]=infoRows[8-y1].infoColumns[x1];
-            infoRows[8-y1].infoColumns[x1]="";
+            infoRows[8 - y2].infoColumns[x2] = infoRows[8 - y1].infoColumns[x1];
+            infoRows[8 - y1].infoColumns[x1] = "";
             Debug.Log("移動しました！");
         }
     }
@@ -100,39 +100,39 @@ public class BoardManager : MonoBehaviour
     {
 
         //移動先に自分の駒がいないか？
-        
-        Debug.Log(x1+" "+y1+" "+x2+" "+x2);
+
+        Debug.Log(x1 + " " + y1 + " " + x2 + " " + x2);
         for (int i = 0; i < 6; i++)
         {
-            if (infoRows[8-y2].infoColumns[x2] == PieceManager.Instance.enemyPieceName[i]||infoRows[8-y2].infoColumns[x2] == "River"||infoRows[8-y2].infoColumns[x2] =="Rock"
-            ||x1==x2&&y1==y2)
+            if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.enemyPieceName[i] || infoRows[8 - y2].infoColumns[x2] == "River" || infoRows[8 - y2].infoColumns[x2] == "Rock"
+            || x1 == x2 && y1 == y2)
             {
                 error = true;
-                GameManager.Instance.select=false;
+                GameManager.Instance.select = false;
                 Debug.Log("error!!");
             }
         }
         for (int i = 0; i < 6; i++)
         {
-            if(infoRows[8-y2].infoColumns[x2] == PieceManager.Instance.playerPieceName[i])
+            if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.playerPieceName[i])
             {
-                deathObj=GameObject.Find(infoRows[8-y2].infoColumns[x2]+"(Clone)");
+                deathObj = GameObject.Find(infoRows[8 - y2].infoColumns[x2] + "(Clone)");
             }
         }
         //問題がなければinfoを書き換える
         if (!error)
         {
-            infoRows[8-y2].infoColumns[x2]=infoRows[8-y1].infoColumns[x1];
-            infoRows[8-y1].infoColumns[x1]="";
+            infoRows[8 - y2].infoColumns[x2] = infoRows[8 - y1].infoColumns[x1];
+            infoRows[8 - y1].infoColumns[x1] = "";
             Debug.Log("移動しました！");
         }
     }
 
     public void PieceMoveAnimation(int x, int y, System.Action callback)
     {
-        GameObject obj=GameObject.Find(infoRows[8-y].infoColumns[x]+"(Clone)");
-        Vector3 pos= tileRows[8-y].tileColumns[x].transform.position;
-        Vector3 objPos= obj.transform.position;
+        GameObject obj = GameObject.Find(infoRows[8 - y].infoColumns[x] + "(Clone)");
+        Vector3 pos = tileRows[8 - y].tileColumns[x].transform.position;
+        Vector3 objPos = obj.transform.position;
 
         obj.transform.DOPath(
             new[]
@@ -142,11 +142,12 @@ public class BoardManager : MonoBehaviour
             },
             1f, PathType.CatmullRom)
             .SetEase(Ease.OutSine)
-            .OnComplete(()=>{
+            .OnComplete(() =>
+            {
                 Destroy(deathObj);
                 callback?.Invoke();
             });
-        
+
     }
 
     void InitializeBoard()
