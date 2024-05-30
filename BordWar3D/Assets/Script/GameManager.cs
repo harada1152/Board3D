@@ -44,10 +44,7 @@ public class GameManager : MonoBehaviour
     public void SetCurrentTurn(GameState newTurn)
     {
         currentState = newTurn;
-
         Debug.Log(newTurn);
-
-
     }
 
     public void SetTurnPhese()
@@ -114,7 +111,7 @@ public class GameManager : MonoBehaviour
                     BoardManager.Instance.CheckPlayerMoveLegality(basePosx, basePosy, movePosx, movePosy);
                     if (BoardManager.Instance.error)
                     {
-                        BoardManager.Instance.error=false;
+                        BoardManager.Instance.error = false;
                         select = false;
                         break;
                     }
@@ -127,7 +124,7 @@ public class GameManager : MonoBehaviour
                     BoardManager.Instance.CheckEnemyMoveLegality(basePosx, basePosy, movePosx, movePosy);
                     if (BoardManager.Instance.error)
                     {
-                        BoardManager.Instance.error=false;
+                        BoardManager.Instance.error = false;
                         select = false;
                         break;
                     }
