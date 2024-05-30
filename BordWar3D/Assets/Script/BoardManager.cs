@@ -12,6 +12,7 @@ public class BoardManager : MonoBehaviour
     public GameObject deathObj;
     [SerializeField] List<Column> tileRows = new List<Column>();
     [SerializeField] List<BoardInfo> infoRows = new List<BoardInfo>();
+    [SerializeField] GameObject selectFramePrefab;
     [SerializeField] GameObject bridgePrefab;
     [SerializeField] GameObject RockPrefab;
     [SerializeField] GameObject[] CommanderPrefab = new GameObject[2];
@@ -158,6 +159,9 @@ public class BoardManager : MonoBehaviour
         {
             for (int j = 0; j < infoRows[i].infoColumns.Count; j++)
             {
+                // TODO 移動可能なマスの表示の為の下準備
+                // Instantiate(selectFramePrefab, tileRows[i].tileColumns[j].transform);
+
                 pos = tileRows[i].tileColumns[j].transform.position;
 
                 //1,2で1P,2Pカラーを差別化

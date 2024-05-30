@@ -7940,6 +7940,7 @@ MonoBehaviour:
     - Sniper1
     - 
     - 
+  selectFramePrefab: {fileID: 2991401557830694681, guid: 6ec5d70a03fa96742b884527329c3323, type: 3}
   bridgePrefab: {fileID: 5388475236012191269, guid: 1ae5468f0e6dddf439b5fb4842f929f4, type: 3}
   RockPrefab: {fileID: 919132149155446097, guid: d15fedf6908025b40aff58f2c1cca650, type: 3}
   CommanderPrefab:
@@ -11069,10 +11070,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d6116faad09a244abd34441a35550be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 0
-  turnPhese: 0
   select: 0
-  checkComp: 0
 --- !u!4 &1883761149
 Transform:
   m_ObjectHideFlags: 0
