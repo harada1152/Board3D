@@ -6,7 +6,7 @@ public class RuleManager : MonoBehaviour
 {
     public static RuleManager Instance;
 
-    private GameState gameState;
+    private GameConst.GameState gameState;
     void Awake(){
         Instance = this;
     }

@@ -3,25 +3,14 @@ using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
 
-public enum GameState
-{
-    PLAYERTURN,
-    ENEMYTURN,
-}
 
-public enum PlayerType
-{
-    None,
-    PLAYER,
-    ENEMY,
-}
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
     GameObject clickedGameObject;//クリックされたゲームオブジェクトを代入する変数
-    public GameState currentState;
+    public GameConst.GameState currentState;
 
     public GameConst.TurnPhase turnPhese;
 
@@ -31,7 +20,7 @@ public class GameManager : MonoBehaviour
     private int basePosx, basePosy, movePosx, movePosy;
 
     private bool isGameEnd = false;
-    private PlayerType winner = PlayerType.None;
+    private GameConst.PlayerType winner = GameConst.PlayerType.None;
 
     void Awake()
     {
@@ -54,11 +43,11 @@ public class GameManager : MonoBehaviour
     // チェック関数
     private void CheckGameEnd()
     {
-        winner = PlayerType.None;
+        winner = GameConst.PlayerType.None;
         // TODO 勝利判定ロジック
         // TODO リーダーユニットが撃破されているプレイヤーは負け
 
-        if (winner != PlayerType.None)
+        if (winner != GameConst.PlayerType.None)
         {
             GameEnd();
             SetWinner(winner);
@@ -72,12 +61,12 @@ public class GameManager : MonoBehaviour
     private void GameEnd() { isGameEnd = true; }
 
     // 勝者を決定
-    private void SetWinner(PlayerType playerType) { winner = playerType; }
+    private void SetWinner(GameConst.PlayerType playerType) { winner = playerType; }
 
     // 勝者を取得
-    private PlayerType GetWinner() { return winner; }
+    private GameConst.PlayerType GetWinner() { return winner; }
 
-    public void SetCurrentTurn(GameState newTurn)
+    public void SetCurrentTurn(GameConst.GameState newTurn)
     {
         currentState = newTurn;
         Debug.Log(newTurn);
@@ -126,12 +115,12 @@ public class GameManager : MonoBehaviour
             basePosy = clickedPos.y;
             switch (currentState)
             {
-                case GameState.PLAYERTURN:
+                case GameConst.GameState.PLAYERTURN:
                     BoardManager.Instance.CheckPlayerSelect(basePosx, basePosy);
                     Debug.Log("移動前" + (8 - basePosy) + " " + basePosx);
                     break;
 
-                case GameState.ENEMYTURN:
+                case GameConst.GameState.ENEMYTURN:
                     BoardManager.Instance.CheckEnemySelect(basePosx, basePosy);
                     break;
             }
@@ -142,7 +131,7 @@ public class GameManager : MonoBehaviour
             movePosy = clickedPos.y;
             switch (currentState)
             {
-                case GameState.PLAYERTURN:
+                case GameConst.GameState.PLAYERTURN:
                     Debug.Log("移動前" + (8 - basePosy) + " " + basePosx + " 移動後 " + (8 - movePosy) + " " + movePosx);
                     BoardManager.Instance.CheckPlayerMoveLegality(basePosx, basePosy, movePosx, movePosy);
                     if (BoardManager.Instance.error)
@@ -154,9 +143,9 @@ public class GameManager : MonoBehaviour
                     if (select) { BoardManager.Instance.PieceMoveAnimation(movePosx, movePosy); }
                     select = false;
                     Debug.Log("select=false");
-                    SetCurrentTurn(GameState.ENEMYTURN);
+                    SetCurrentTurn(GameConst.GameState.ENEMYTURN);
                     break;
-                case GameState.ENEMYTURN:
+                case GameConst.GameState.ENEMYTURN:
                     BoardManager.Instance.CheckEnemyMoveLegality(basePosx, basePosy, movePosx, movePosy);
                     if (BoardManager.Instance.error)
                     {
@@ -166,7 +155,7 @@ public class GameManager : MonoBehaviour
                     }
                     if (select) { BoardManager.Instance.PieceMoveAnimation(movePosx, movePosy); }
                     select = false;
-                    SetCurrentTurn(GameState.PLAYERTURN);
+                    SetCurrentTurn(GameConst.GameState.PLAYERTURN);
 
                     break;
             }

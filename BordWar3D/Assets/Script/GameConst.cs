@@ -14,6 +14,19 @@ public static class GameConst
         Ended                    // 終了
     }
 
+    public enum PlayerType
+    {
+        None,
+        PLAYER,
+        ENEMY,
+    }
+
+    public enum GameState
+    {
+        PLAYERTURN,
+        ENEMYTURN,
+    }
+
     public enum TurnPhase
     {
         Start,
