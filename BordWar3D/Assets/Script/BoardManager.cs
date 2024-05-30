@@ -128,10 +128,10 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public void PieceMoveAnimation(int x, int y)
+    public void PieceMoveAnimation(int x, int y, System.Action callback)
     {
         GameObject obj=GameObject.Find(infoRows[8-y].infoColumns[x]+"(Clone)");
-        Vector3 pos= tileRows[8-y].tileColumns[x].transform.position; 
+        Vector3 pos= tileRows[8-y].tileColumns[x].transform.position;
         Vector3 objPos= obj.transform.position;
 
         obj.transform.DOPath(
@@ -144,6 +144,7 @@ public class BoardManager : MonoBehaviour
             .SetEase(Ease.OutSine)
             .OnComplete(()=>{
                 Destroy(deathObj);
+                callback?.Invoke();
             });
         
     }

@@ -2,23 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
-
-
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    [HideInInspector] public bool select = false;
 
-    GameObject clickedGameObject;//クリックされたゲームオブジェクトを代入する変数
-    public GameConst.GameState currentState;
-
-    public GameConst.TurnPhase turnPhese;
-
-    public bool select = false;
-    public bool checkComp = false;
-
+    private GameConst.GameState currentState;
+    private GameConst.TurnPhase beforeTurnPhese;
+    private GameConst.TurnPhase currentTurnPhese;
     private int basePosx, basePosy, movePosx, movePosy;
-
     private bool isGameEnd = false;
     private GameConst.PlayerType winner = GameConst.PlayerType.None;
 
@@ -29,16 +23,144 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        // TODO 先攻後攻システム？
+        // TODO ゲーム開始処理演出？
+        currentState = GameConst.GameState.PLAYERTURN;
+        beforeTurnPhese = GameConst.TurnPhase.Next; // スタートフェイズの初期化処理を有効化するため
+        SetTurnPhese(GameConst.TurnPhase.Start);
     }
 
     // Update is called once per frame
     void Update()
     {
-        GetPlayerInput();
+        // TODO ゲームが終了した場合の処理
+        if (IsGameEnd())
+        {
+            // TODO 終了演出など
+            Debug.Log($"Winner : {GetWinner()}");
+            return;
+        }
 
-        SetTurnPhese();
+        // フェイズの移り変わり時に一度だけ呼び出される関数群
+        if (HasPhaseChanged())
+        {
+            switch (currentTurnPhese)
+            {
+                case GameConst.TurnPhase.Start:
+                    InitializeStartPhase();
+                    break;
+                case GameConst.TurnPhase.Action:
+                    InitializeActionPhase();
+                    break;
+                case GameConst.TurnPhase.End:
+                    InitializeEndPhase();
+                    break;
+                case GameConst.TurnPhase.Next:
+                    InitializeNextPhase();
+                    break;
+            }
+            ResetPhaseChangeFlag();
+
+            return;
+        }
+
+        // 各フェイズの更新関数
+        switch (currentTurnPhese)
+        {
+            case GameConst.TurnPhase.Start:
+                UpdateStartPhase();
+                break;
+            case GameConst.TurnPhase.Action:
+                UpdateActionPhase();
+                break;
+            case GameConst.TurnPhase.End:
+                UpdateEndPhase();
+                break;
+            case GameConst.TurnPhase.Next:
+                UpdateNextPhase();
+                break;
+        }
     }
+
+    // スタートフェイズの初期化処理
+    private void InitializeStartPhase()
+    {
+        Debug.Log("TurnPhese:Start");
+        // TODO 初期化処理
+
+        // TODO 仮でフェイズ遷移を追加
+        DOVirtual.DelayedCall(0.5f, () => { SetTurnPhese(GameConst.TurnPhase.Action); });
+    }
+
+    // TODO スタートフェイズ中の処理
+    private void UpdateStartPhase() { }
+
+    // アクションフェイズの初期化処理
+    private void InitializeActionPhase() { Debug.Log("TurnPhese:Action"); }
+
+    // アクションフェイズ中の処理
+    private void UpdateActionPhase()
+    {
+        // クリック取得がなければ処理なし
+        if (!Input.GetMouseButtonDown(0)) { return; }
+
+        // クリック取得後にマス情報が無ければ処理なし
+        Vector2Int clickedPos = Vector2Int.zero;
+        if (!TryGetClickedPos(out clickedPos)) { return; }
+
+        // 取得したマス情報から入力処理を開始
+        BaseInput(clickedPos);
+
+        // アニメーション終了後のコールバック
+        void OnCompleteAnimationCallback() => SetTurnPhese(GameConst.TurnPhase.End);
+
+        switch (currentState)
+        {
+            case GameConst.GameState.PLAYERTURN:
+                PlayerInput(OnCompleteAnimationCallback);
+                break;
+            case GameConst.GameState.ENEMYTURN:
+                EnemyInput(OnCompleteAnimationCallback);
+                break;
+            default:
+                break;
+        }
+    }
+
+    // エンドフェイズの初期化処理
+    private void InitializeEndPhase()
+    {
+        Debug.Log("TurnPhese:End");
+
+        // 勝利判定
+        CheckGameEnd();
+
+        // ゲームが終了していたら処理終了
+        if (IsGameEnd()) { return; }
+
+        // TODO 仮でフェイズ遷移を追加
+        DOVirtual.DelayedCall(0.5f, () => { SetTurnPhese(GameConst.TurnPhase.Next); });
+    }
+
+    // TODO エンドフェイズ中の処理
+    private void UpdateEndPhase() { }
+
+    // ネクストフェイズの初期化処理
+    private void InitializeNextPhase()
+    {
+        Debug.Log("TurnPhese:Next");
+        // TODO 初期化処理
+
+        // TODO 仮でフェイズ遷移を追加
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            SwitchToNextTurn();
+            SetTurnPhese(GameConst.TurnPhase.Start);
+        });
+    }
+
+    // TODO ネクストフェイズ中の処理
+    private void UpdateNextPhase() { }
 
     // チェック関数
     private void CheckGameEnd()
@@ -66,102 +188,40 @@ public class GameManager : MonoBehaviour
     // 勝者を取得
     private GameConst.PlayerType GetWinner() { return winner; }
 
+    // ターンを設定
     public void SetCurrentTurn(GameConst.GameState newTurn)
     {
         currentState = newTurn;
         Debug.Log(newTurn);
     }
 
-    public void SetTurnPhese()
+    // ターンの切り替え処理
+    private void SwitchToNextTurn()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        switch (currentState)
         {
-            switch (turnPhese)
-            {
-                case GameConst.TurnPhase.Start:
-                    Debug.Log("TurnPhese:Action");
-                    turnPhese = GameConst.TurnPhase.Action;
-                    break;
-                case GameConst.TurnPhase.Action:
-                    Debug.Log("TurnPhese:End");
-                    turnPhese = GameConst.TurnPhase.End;
-                    break;
-                case GameConst.TurnPhase.End:
-                    Debug.Log("TurnPhese:Next");
-                    turnPhese = GameConst.TurnPhase.Next;
-                    break;
-                case GameConst.TurnPhase.Next:
-                    Debug.Log("TurnPhese:Start");
-                    turnPhese = GameConst.TurnPhase.Start;
-                    break;
-            }
+            case GameConst.GameState.PLAYERTURN:
+                SetCurrentTurn(GameConst.GameState.ENEMYTURN);
+                break;
+            case GameConst.GameState.ENEMYTURN:
+                SetCurrentTurn(GameConst.GameState.PLAYERTURN);
+                break;
+            default:
+                SetCurrentTurn(GameConst.GameState.PLAYERTURN);
+                break;
         }
     }
 
-    public void GetPlayerInput()
-    {
+    // 現在のフェイズを設定
+    private void SetTurnPhese(GameConst.TurnPhase turnPhase) { currentTurnPhese = turnPhase; }
 
-        if (!Input.GetMouseButtonDown(0))
-        {
-            return;
-        }
+    // フェイズの切り替わりを検知
+    private bool HasPhaseChanged() { return currentTurnPhese != beforeTurnPhese; }
 
-        Vector2Int clickedPos = Vector2Int.zero;
-        if (!TryGetClickedPos(out clickedPos)) { return; }
+    // フェイズの初期化フラグを下す
+    private void ResetPhaseChangeFlag() { beforeTurnPhese = currentTurnPhese; }
 
-        if (!select)
-        {
-            basePosx = clickedPos.x;
-            basePosy = clickedPos.y;
-            switch (currentState)
-            {
-                case GameConst.GameState.PLAYERTURN:
-                    BoardManager.Instance.CheckPlayerSelect(basePosx, basePosy);
-                    Debug.Log("移動前" + (8 - basePosy) + " " + basePosx);
-                    break;
-
-                case GameConst.GameState.ENEMYTURN:
-                    BoardManager.Instance.CheckEnemySelect(basePosx, basePosy);
-                    break;
-            }
-        }
-        else
-        {
-            movePosx = clickedPos.x;
-            movePosy = clickedPos.y;
-            switch (currentState)
-            {
-                case GameConst.GameState.PLAYERTURN:
-                    Debug.Log("移動前" + (8 - basePosy) + " " + basePosx + " 移動後 " + (8 - movePosy) + " " + movePosx);
-                    BoardManager.Instance.CheckPlayerMoveLegality(basePosx, basePosy, movePosx, movePosy);
-                    if (BoardManager.Instance.error)
-                    {
-                        BoardManager.Instance.error = false;
-                        select = false;
-                        break;
-                    }
-                    if (select) { BoardManager.Instance.PieceMoveAnimation(movePosx, movePosy); }
-                    select = false;
-                    Debug.Log("select=false");
-                    SetCurrentTurn(GameConst.GameState.ENEMYTURN);
-                    break;
-                case GameConst.GameState.ENEMYTURN:
-                    BoardManager.Instance.CheckEnemyMoveLegality(basePosx, basePosy, movePosx, movePosy);
-                    if (BoardManager.Instance.error)
-                    {
-                        BoardManager.Instance.error = false;
-                        select = false;
-                        break;
-                    }
-                    if (select) { BoardManager.Instance.PieceMoveAnimation(movePosx, movePosy); }
-                    select = false;
-                    SetCurrentTurn(GameConst.GameState.PLAYERTURN);
-
-                    break;
-            }
-        }
-    }
-
+    // クリック情報から、マス情報の取得を試みる
     private bool TryGetClickedPos(out Vector2Int pos)
     {
         pos = Vector2Int.zero;
@@ -170,16 +230,70 @@ public class GameManager : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("masu"))
         {
-            clickedGameObject = hit.collider.gameObject;
+            GameObject clickedGameObject = hit.collider.gameObject;
             int x = (int)Mathf.Floor(clickedGameObject.transform.position.x);
             int y = (int)Mathf.Floor(clickedGameObject.transform.position.z);
 
             pos = new Vector2Int(x, y);
             return true;
         }
-
         return false;
     }
 
-}
+    // クリック時のマス情報を保持
+    private void BaseInput(Vector2Int clickedPos)
+    {
+        if (!select)
+        {
+            basePosx = clickedPos.x;
+            basePosy = clickedPos.y;
+            Debug.Log("移動前" + (8 - basePosy) + " " + basePosx);
+        }
+        else
+        {
+            movePosx = clickedPos.x;
+            movePosy = clickedPos.y;
+            Debug.Log("移動前" + (8 - basePosy) + " " + basePosx + " 移動後 " + (8 - movePosy) + " " + movePosx);
+        }
+    }
 
+    // 選択後の処理
+    private void BaseAfterInput(System.Action onCompleteCallback)
+    {
+        if (!select) return;
+
+        if (BoardManager.Instance.error)
+        {
+            BoardManager.Instance.error = false;
+            select = false;
+            return;
+        }
+
+        if (select) { BoardManager.Instance.PieceMoveAnimation(movePosx, movePosy, onCompleteCallback); }
+        select = false;
+    }
+
+    // 保持したマス情報をプレイヤー処理へ
+    private void PlayerInput(System.Action onCompleteCallback)
+    {
+        if (!select)
+            BoardManager.Instance.CheckPlayerSelect(basePosx, basePosy);
+        else
+        {
+            BoardManager.Instance.CheckPlayerMoveLegality(basePosx, basePosy, movePosx, movePosy);
+            BaseAfterInput(onCompleteCallback);
+        }
+    }
+
+    // 保持したマス情報をエネミー処理へ
+    private void EnemyInput(System.Action onCompleteCallback)
+    {
+        if (!select)
+            BoardManager.Instance.CheckEnemySelect(basePosx, basePosy);
+        else
+        {
+            BoardManager.Instance.CheckEnemyMoveLegality(basePosx, basePosy, movePosx, movePosy);
+            BaseAfterInput(onCompleteCallback);
+        }
+    }
+}
