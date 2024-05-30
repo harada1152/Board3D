@@ -9,6 +9,13 @@ public enum GameState
     ENEMYTURN,
 }
 
+public enum PlayerType
+{
+    None,
+    PLAYER,
+    ENEMY,
+}
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -22,6 +29,9 @@ public class GameManager : MonoBehaviour
     public bool checkComp = false;
 
     private int basePosx, basePosy, movePosx, movePosy;
+
+    private bool isGameEnd = false;
+    private PlayerType winner = PlayerType.None;
 
     void Awake()
     {
@@ -40,6 +50,32 @@ public class GameManager : MonoBehaviour
 
         SetTurnPhese();
     }
+
+    // チェック関数
+    private void CheckGameEnd()
+    {
+        winner = PlayerType.None;
+        // TODO 勝利判定ロジック
+        // TODO リーダーユニットが撃破されているプレイヤーは負け
+
+        if (winner != PlayerType.None)
+        {
+            GameEnd();
+            SetWinner(winner);
+        }
+    }
+
+    // ゲーム終了済みか
+    private bool IsGameEnd() { return isGameEnd; }
+
+    // ゲーム終了関数
+    private void GameEnd() { isGameEnd = true; }
+
+    // 勝者を決定
+    private void SetWinner(PlayerType playerType) { winner = playerType; }
+
+    // 勝者を取得
+    private PlayerType GetWinner() { return winner; }
 
     public void SetCurrentTurn(GameState newTurn)
     {
