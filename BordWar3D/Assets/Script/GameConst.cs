@@ -34,4 +34,13 @@ public static class GameConst
         End,
         Next,
     }
+
+    public enum pieceClass
+    {
+        Assault,
+        Grenade,
+        MachineGun,
+        Sniper,
+        Commander
+    }
 }

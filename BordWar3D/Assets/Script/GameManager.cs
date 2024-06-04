@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public bool select = false;
 
     private GameConst.GameState currentState;
-    private GameConst.TurnPhase beforeTurnPhese;
+    private GameConst.TurnPhase beforeTurnPhase;
     private GameConst.TurnPhase currentTurnPhese;
     private int basePosx, basePosy, movePosx, movePosy;
     private bool isGameEnd = false;
@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
         // TODO 先攻後攻システム？
         // TODO ゲーム開始処理演出？
         currentState = GameConst.GameState.PLAYERTURN;
-        beforeTurnPhese = GameConst.TurnPhase.Next; // スタートフェイズの初期化処理を有効化するため
+        beforeTurnPhase = GameConst.TurnPhase.Next; // スタートフェイズの初期化処理を有効化するため
         SetTurnPhese(GameConst.TurnPhase.Start);
     }
 
@@ -216,10 +216,10 @@ public class GameManager : MonoBehaviour
     private void SetTurnPhese(GameConst.TurnPhase turnPhase) { currentTurnPhese = turnPhase; }
 
     // フェイズの切り替わりを検知
-    private bool HasPhaseChanged() { return currentTurnPhese != beforeTurnPhese; }
+    private bool HasPhaseChanged() { return currentTurnPhese != beforeTurnPhase; }
 
     // フェイズの初期化フラグを下す
-    private void ResetPhaseChangeFlag() { beforeTurnPhese = currentTurnPhese; }
+    private void ResetPhaseChangeFlag() { beforeTurnPhase = currentTurnPhese; }
 
     // クリック情報から、マス情報の取得を試みる
     private bool TryGetClickedPos(out Vector2Int pos)
@@ -228,7 +228,7 @@ public class GameManager : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit = new RaycastHit();
 
-        if (Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("masu"))
+        if (Physics.Raycast(ray, out hit, 50.0f) && hit.collider.gameObject.CompareTag("masu"))
         {
             GameObject clickedGameObject = hit.collider.gameObject;
             int x = (int)Mathf.Floor(clickedGameObject.transform.position.x);

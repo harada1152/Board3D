@@ -4,14 +4,16 @@ using UnityEngine;
 using System;
 using Random = UnityEngine.Random;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class BoardManager : MonoBehaviour
 {
     public static BoardManager Instance;
-
     public GameObject deathObj;
-    [SerializeField] List<Column> tileRows = new List<Column>();
-    [SerializeField] List<BoardInfo> infoRows = new List<BoardInfo>();
+    List<Vector2Int> moveRange = new List<Vector2Int>();
+    List<Vector2Int> attackRange = new List<Vector2Int>();
+    [SerializeField] public List<Column> tileRows = new List<Column>();
+    [SerializeField] public List<BoardInfo> infoRows = new List<BoardInfo>();
     [SerializeField] GameObject selectFramePrefab;
     [SerializeField] GameObject bridgePrefab;
     [SerializeField] GameObject RockPrefab;
@@ -20,6 +22,12 @@ public class BoardManager : MonoBehaviour
     [SerializeField] GameObject[] MachineGunPrefab = new GameObject[2];
     [SerializeField] GameObject[] AssaultPrefab = new GameObject[2];
     [SerializeField] GameObject[] GrenadePrefab = new GameObject[2];
+
+    [SerializeField] private GameObject moveRangeFramePrefab;
+    [SerializeField] private GameObject attackRangeFramePrefab;
+    List<GameObject> moveRangeFrames = new List<GameObject>();
+    List<GameObject> attackRangeFrames = new List<GameObject>();
+    private int rangeFrameObjCount = 15;
 
 
     public bool error;
@@ -35,6 +43,8 @@ public class BoardManager : MonoBehaviour
         RandomBridge();
 
         InitializeBoard();
+
+        MakeFrame();
 
     }
 
@@ -129,11 +139,21 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    //駒の移動とアニメーション
     public void PieceMoveAnimation(int x, int y, System.Action callback)
     {
         GameObject obj = GameObject.Find(infoRows[8 - y].infoColumns[x] + "(Clone)");
         Vector3 pos = tileRows[8 - y].tileColumns[x].transform.position;
+
         Vector3 objPos = obj.transform.position;
+        if (8 - y == 4)
+        {
+            objPos.y = 1.26f;
+        }
+        else
+        {
+            objPos.y = 0.96f;
+        }
 
         obj.transform.DOPath(
             new[]
@@ -148,6 +168,31 @@ public class BoardManager : MonoBehaviour
                 Destroy(deathObj);
                 callback?.Invoke();
             });
+
+    }
+
+    //範囲表示用タイルを生成し、listに保管
+    void MakeFrame()
+    {
+        for (int i = 0; i < rangeFrameObjCount; i++)
+        {
+            GameObject obj = Instantiate(moveRangeFramePrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, gameObject.transform);
+            obj.SetActive(false);
+            moveRangeFrames.Add(obj);
+
+            obj = Instantiate(attackRangeFramePrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, gameObject.transform);
+            obj.SetActive(false);
+            attackRangeFrames.Add(obj);
+        }
+
+    }
+
+    void HighLightMoveRange(int x, int y)
+    {
+        if (infoRows[8 - y].infoColumns[x] == "")
+        {
+
+        }
 
     }
 
