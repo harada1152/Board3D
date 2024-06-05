@@ -25,9 +25,9 @@ public class BoardManager : MonoBehaviour
 
     [SerializeField] private GameObject moveRangeFramePrefab;
     [SerializeField] private GameObject attackRangeFramePrefab;
-    List<GameObject> moveRangeFrames = new List<GameObject>();
-    List<GameObject> attackRangeFrames = new List<GameObject>();
-    private int rangeFrameObjCount = 15;
+    [SerializeField] List<GameObject> moveRangeFrames = new List<GameObject>();
+    [SerializeField] List<GameObject> attackRangeFrames = new List<GameObject>();
+    private int rangeFrameObjCount = 32;
 
 
     public bool error;
@@ -42,9 +42,11 @@ public class BoardManager : MonoBehaviour
     {
         RandomBridge();
 
+        MakeFrame();
+
         InitializeBoard();
 
-        MakeFrame();
+
 
     }
 
@@ -61,6 +63,9 @@ public class BoardManager : MonoBehaviour
         if (0 < num)
         {
             Debug.Log("Select=true");
+            PieceManager.Instance.SetCurrentPiece(infoRows[8 - y].infoColumns[x]);
+            ActiveMoveFrame(PieceManager.Instance.ReturnMoveRange(x, y), x, y);
+
             GameManager.Instance.select = true;
         }
     }
@@ -72,6 +77,8 @@ public class BoardManager : MonoBehaviour
         if (0 < num)
         {
             Debug.Log("Select=true");
+            PieceManager.Instance.SetCurrentPiece(infoRows[8 - y].infoColumns[x]);
+            ActiveMoveFrame(PieceManager.Instance.ReturnMoveRange(x, y), x, y);
             GameManager.Instance.select = true;
         }
     }
@@ -83,11 +90,13 @@ public class BoardManager : MonoBehaviour
         Debug.Log(x1 + " " + y1 + " " + x2 + " " + x2);
         for (int i = 0; i < 6; i++)
         {
-            if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.playerPieceName[i] || infoRows[8 - y2].infoColumns[x2] == "River" || infoRows[8 - y2].infoColumns[x2] == "Rock"
+            if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.playerPieceName[i]
+            || infoRows[8 - y2].infoColumns[x2] == "River" || infoRows[8 - y2].infoColumns[x2] == "Rock"
             || x1 == x2 && y1 == y2)
             {
                 error = true;
                 GameManager.Instance.select = false;
+                HideFrame();
                 Debug.Log("error!!");
             }
         }
@@ -105,6 +114,7 @@ public class BoardManager : MonoBehaviour
             infoRows[8 - y1].infoColumns[x1] = "";
             Debug.Log("移動しました！");
         }
+        error = false;
     }
 
     public void CheckEnemyMoveLegality(int x1, int y1, int x2, int y2)
@@ -115,11 +125,13 @@ public class BoardManager : MonoBehaviour
         Debug.Log(x1 + " " + y1 + " " + x2 + " " + x2);
         for (int i = 0; i < 6; i++)
         {
-            if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.enemyPieceName[i] || infoRows[8 - y2].infoColumns[x2] == "River" || infoRows[8 - y2].infoColumns[x2] == "Rock"
+            if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.enemyPieceName[i] || infoRows[8 - y2].infoColumns[x2] == "River"
+            || infoRows[8 - y2].infoColumns[x2] == "Rock"
             || x1 == x2 && y1 == y2)
             {
                 error = true;
                 GameManager.Instance.select = false;
+                HideFrame();
                 Debug.Log("error!!");
             }
         }
@@ -137,6 +149,7 @@ public class BoardManager : MonoBehaviour
             infoRows[8 - y1].infoColumns[x1] = "";
             Debug.Log("移動しました！");
         }
+        error = false;
     }
 
     //駒の移動とアニメーション
@@ -179,21 +192,57 @@ public class BoardManager : MonoBehaviour
             GameObject obj = Instantiate(moveRangeFramePrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, gameObject.transform);
             obj.SetActive(false);
             moveRangeFrames.Add(obj);
+            Debug.Log(moveRangeFrames.Count);
 
             obj = Instantiate(attackRangeFramePrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, gameObject.transform);
             obj.SetActive(false);
             attackRangeFrames.Add(obj);
+            Debug.Log(attackRangeFrames.Count);
         }
 
     }
 
-    void HighLightMoveRange(int x, int y)
+    void ActiveMoveFrame(List<Vector2Int> range, int x, int y)
     {
-        if (infoRows[8 - y].infoColumns[x] == "")
+        for (int i = 0; i < range.Count; i++)
         {
 
-        }
+            Vector3 pos;
+            pos.x = range[i].x;
+            pos.z = range[i].y;
+            int infoX = range[i].x;
+            int infoY = range[i].y;
 
+            Debug.Log(infoX + " " + infoY);
+
+            if (infoX > 7 || infoY > 8 || infoX < 0 || infoY < 0) { continue; }
+
+            if (range[i].x >= 0f && range[i].x < 8f && range[i].y >= 0f && range[i].y < 9f
+            && infoRows[8 - infoY].infoColumns[infoX] == "" && infoRows[8 - infoY].infoColumns[infoX] != "River")
+            {
+                moveRangeFrames[i].SetActive(true);
+            }
+
+            if (pos.z == 4 && infoRows[y].infoColumns[x] != "River")
+            {
+                moveRangeFrames[i].transform.position = new Vector3(pos.x, 0f, pos.z);
+            }
+            else
+            {
+                moveRangeFrames[i].transform.position = new Vector3(pos.x, -0.3f, pos.z);
+            }
+            //moveRangeFrames[i].transform.position=new Range;
+        }
+    }
+
+    public void HideFrame()
+    {
+
+        for (int i = 0; i < rangeFrameObjCount - 1; i++)
+        {
+            moveRangeFrames[i].SetActive(false);
+            attackRangeFrames[i].SetActive(false);
+        }
     }
 
     void InitializeBoard()
@@ -219,7 +268,7 @@ public class BoardManager : MonoBehaviour
                 }
                 else if (infoRows[i].infoColumns[j] == "Commander1")
                 {
-                    pos.y = 1.2f;
+                    pos.y = 0.96f;
                     Instantiate(CommanderPrefab[0], pos, Quaternion.identity);
                 }
                 else if (infoRows[i].infoColumns[j] == "Sniper1")
@@ -250,7 +299,7 @@ public class BoardManager : MonoBehaviour
                 //2P
                 else if (infoRows[i].infoColumns[j] == "Commander2")
                 {
-                    pos.y = 1.2f;
+                    pos.y = 0.96f;
                     Instantiate(CommanderPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
                 }
                 else if (infoRows[i].infoColumns[j] == "Sniper2")

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - masu
   - koma
+  - MoveRangeFrame
+  - AttackRangeFrame
   layers:
   - Default
   - TransparentFX

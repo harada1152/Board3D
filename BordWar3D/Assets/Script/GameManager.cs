@@ -228,7 +228,8 @@ public class GameManager : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit = new RaycastHit();
 
-        if (Physics.Raycast(ray, out hit, 50.0f) && hit.collider.gameObject.CompareTag("masu"))
+        if (!select&&Physics.Raycast(ray, out hit, 50.0f) && hit.collider.gameObject.CompareTag("masu")||
+        select&&Physics.Raycast(ray, out hit, 50.0f) && hit.collider.gameObject.CompareTag("MoveRangeFrame"))
         {
             GameObject clickedGameObject = hit.collider.gameObject;
             int x = (int)Mathf.Floor(clickedGameObject.transform.position.x);
@@ -236,6 +237,11 @@ public class GameManager : MonoBehaviour
 
             pos = new Vector2Int(x, y);
             return true;
+        }
+        else
+        {
+            select = false;
+            BoardManager.Instance.HideFrame();
         }
         return false;
     }
@@ -265,11 +271,13 @@ public class GameManager : MonoBehaviour
         if (BoardManager.Instance.error)
         {
             BoardManager.Instance.error = false;
+            BoardManager.Instance.HideFrame();
             select = false;
             return;
         }
 
         if (select) { BoardManager.Instance.PieceMoveAnimation(movePosx, movePosy, onCompleteCallback); }
+        BoardManager.Instance.HideFrame();
         select = false;
     }
 
