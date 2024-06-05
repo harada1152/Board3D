@@ -292,7 +292,7 @@ public class BoardManager : MonoBehaviour
             //移動先が橋の場合は橋の高さの分、フレームの位置を調整する
             if (pos.z == 4 && infoRows[y].infoColumns[x] != "River")
             {
-                attackRangeFrames[i].transform.position = new Vector3(pos.x, 0f, pos.z);
+                attackRangeFrames[i].transform.position = new Vector3(pos.x, 0.4f, pos.z);
             }
             else
             {

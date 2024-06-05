@@ -55,7 +55,7 @@ public class PieceManager : MonoBehaviour
         }
         else if(pieceName == "Sniper2")
         {
-            currentPieceClass = GameConst.pieceClass.Sniper1P;
+            currentPieceClass = GameConst.pieceClass.Sniper2P;
         }
         else if (pieceName == "Grenade1" || pieceName == "Grenade2")
         {
