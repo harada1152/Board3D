@@ -184,7 +184,7 @@ public class BoardManager : MonoBehaviour
 
     }
 
-    //範囲表示用タイルを生成し、listに保管
+    //範囲表示用のフレームを生成し、リストに保管
     void MakeFrame()
     {
         for (int i = 0; i < rangeFrameObjCount; i++)
@@ -202,6 +202,7 @@ public class BoardManager : MonoBehaviour
 
     }
 
+    //移動可能な座標リストを元にフレームを必要な数だけ表示し、配置する
     void ActiveMoveFrame(List<Vector2Int> range, int x, int y)
     {
         for (int i = 0; i < range.Count; i++)
@@ -215,14 +216,31 @@ public class BoardManager : MonoBehaviour
 
             Debug.Log(infoX + " " + infoY);
 
+            //もしボードの範囲外の座標だったら表示させず、次の座標の処理へ
             if (infoX > 7 || infoY > 8 || infoX < 0 || infoY < 0) { continue; }
 
-            if (range[i].x >= 0f && range[i].x < 8f && range[i].y >= 0f && range[i].y < 9f
-            && infoRows[8 - infoY].infoColumns[infoX] == "" && infoRows[8 - infoY].infoColumns[infoX] != "River")
+            //移動先が空いていて、川でなければ表示する(相手の駒がいる場合も表示)
+            switch (GameManager.Instance.currentState)
             {
-                moveRangeFrames[i].SetActive(true);
+                case GameConst.GameState.PLAYERTURN:
+                    if (infoRows[8 - infoY].infoColumns[infoX] == "" ||Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1>0
+                    && infoRows[8 - infoY].infoColumns[infoX] != "River")
+                    {
+                        moveRangeFrames[i].SetActive(true);
+                    }
+                    break;
+
+                case GameConst.GameState.ENEMYTURN:
+                    if (infoRows[8 - infoY].infoColumns[infoX] == "" ||Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1>0
+                    && infoRows[8 - infoY].infoColumns[infoX] != "River")
+                    {
+                        moveRangeFrames[i].SetActive(true);
+                    }
+                    break;
+
             }
 
+            //移動先が橋の場合は橋の高さの分、フレームの位置を調整する
             if (pos.z == 4 && infoRows[y].infoColumns[x] != "River")
             {
                 moveRangeFrames[i].transform.position = new Vector3(pos.x, 0f, pos.z);
@@ -231,10 +249,10 @@ public class BoardManager : MonoBehaviour
             {
                 moveRangeFrames[i].transform.position = new Vector3(pos.x, -0.3f, pos.z);
             }
-            //moveRangeFrames[i].transform.position=new Range;
         }
     }
 
+    //駒の選択解除されたときに表示されているフレームを全て隠す
     public void HideFrame()
     {
 
@@ -245,6 +263,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    //駒の初期配置
     void InitializeBoard()
     {
         Vector3 pos = new Vector3();
@@ -253,9 +272,6 @@ public class BoardManager : MonoBehaviour
         {
             for (int j = 0; j < infoRows[i].infoColumns.Count; j++)
             {
-                // TODO 移動可能なマスの表示の為の下準備
-                // Instantiate(selectFramePrefab, tileRows[i].tileColumns[j].transform);
-
                 pos = tileRows[i].tileColumns[j].transform.position;
 
                 //1,2で1P,2Pカラーを差別化
@@ -331,6 +347,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    //ランダムに橋を配置
     void RandomBridge()
     {
         int[] num = new int[2];

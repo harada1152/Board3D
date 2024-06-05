@@ -37,6 +37,7 @@ public class PieceManager : MonoBehaviour
 
     }
 
+    //選択された駒の種類を判別
     public void SetCurrentPiece(string pieceName)
     {
         if (pieceName == "Assault1_A" || pieceName == "Assault1_B" || pieceName == "Assault2_A" || pieceName == "Assault2_B")
@@ -61,6 +62,7 @@ public class PieceManager : MonoBehaviour
         }
     }
 
+    //選択した駒の移動可能な範囲を計算してリストで返す
     public List<Vector2Int> ReturnMoveRange(int x, int y)
     {
 
@@ -90,6 +92,7 @@ public class PieceManager : MonoBehaviour
         return null;
     }
 
+    //選択された駒の座標を元に移動範囲を計算
     List<Vector2Int> CalcMoveRange(List<Vector2Int> moveType, int x, int y)
     {
 

@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     [HideInInspector] public bool select = false;
 
-    private GameConst.GameState currentState;
+    public GameConst.GameState currentState;
     private GameConst.TurnPhase beforeTurnPhase;
     private GameConst.TurnPhase currentTurnPhese;
     private int basePosx, basePosy, movePosx, movePosy;
