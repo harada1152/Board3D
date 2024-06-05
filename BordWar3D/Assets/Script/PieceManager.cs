@@ -12,8 +12,9 @@ public class PieceManager : MonoBehaviour
 
     public List<Vector2Int> moveTypeA = new List<Vector2Int>();
     public List<Vector2Int> moveTypeB = new List<Vector2Int>();
-    public List<Vector2Int> AttackTypeSniper = new List<Vector2Int> {new Vector2Int(0,1),new Vector2Int(0,2),new Vector2Int(0,3),
-                                                                new Vector2Int(0,4)};
+    public List<Vector2Int> AttackTypeSniper1P = new List<Vector2Int> ();
+    public List<Vector2Int> AttackTypeSniper2P = new List<Vector2Int> ();
+
     public List<Vector2Int> AttackTypeMachineGun = new List<Vector2Int>();
     public List<Vector2Int> AttackTypeGrenade = new List<Vector2Int>();                                                           
     public List<Vector2Int> moveRange = new List<Vector2Int>();
@@ -48,9 +49,13 @@ public class PieceManager : MonoBehaviour
         {
             currentPieceClass = GameConst.pieceClass.Commander;
         }
-        else if (pieceName == "Sniper1" || pieceName == "Sniper2")
+        else if (pieceName == "Sniper1" )
         {
-            currentPieceClass = GameConst.pieceClass.Sniper;
+            currentPieceClass = GameConst.pieceClass.Sniper1P;
+        }
+        else if(pieceName == "Sniper2")
+        {
+            currentPieceClass = GameConst.pieceClass.Sniper1P;
         }
         else if (pieceName == "Grenade1" || pieceName == "Grenade2")
         {
@@ -65,7 +70,6 @@ public class PieceManager : MonoBehaviour
     //選択した駒の移動可能な範囲を計算してリストで返す
     public List<Vector2Int> ReturnMoveRange(int x, int y)
     {
-
         switch (currentPieceClass)
         {
             case GameConst.pieceClass.Assault:
@@ -80,7 +84,11 @@ public class PieceManager : MonoBehaviour
                 moveRange = new List<Vector2Int>(CalcMoveRange(moveTypeA, x, y));
                 calculatedRange.Clear();
                 return moveRange;
-            case GameConst.pieceClass.Sniper:
+            case GameConst.pieceClass.Sniper1P:
+                moveRange = new List<Vector2Int>(CalcMoveRange(moveTypeA, x, y));
+                calculatedRange.Clear();
+                return moveRange;
+            case GameConst.pieceClass.Sniper2P:
                 moveRange = new List<Vector2Int>(CalcMoveRange(moveTypeA, x, y));
                 calculatedRange.Clear();
                 return moveRange;
@@ -92,13 +100,52 @@ public class PieceManager : MonoBehaviour
         return null;
     }
 
-    //選択された駒の座標を元に移動範囲を計算
+    public List<Vector2Int> ReturnAttackRange(int x, int y)
+    {
+        switch (currentPieceClass)
+        {
+            case GameConst.pieceClass.Assault:
+                return calculatedRange;
+            case GameConst.pieceClass.Grenade:
+                attackRange = new List<Vector2Int>(CalAttackRange(AttackTypeGrenade, x, y));
+                calculatedRange.Clear();
+                return attackRange;
+            case GameConst.pieceClass.MachineGun:
+                attackRange = new List<Vector2Int>(CalAttackRange(AttackTypeMachineGun, x, y));
+                calculatedRange.Clear();
+                return attackRange;
+            case GameConst.pieceClass.Sniper1P:
+                attackRange = new List<Vector2Int>(CalAttackRange(AttackTypeSniper1P, x, y));
+                calculatedRange.Clear();
+                return attackRange;
+            case GameConst.pieceClass.Sniper2P:
+                attackRange = new List<Vector2Int>(CalAttackRange(AttackTypeSniper2P, x, y));
+                calculatedRange.Clear();
+                return attackRange;
+            case GameConst.pieceClass.Commander:
+                return calculatedRange;
+        }
+        return null;
+    }
+
+    //選択された駒の種類、座標を元に移動範囲を計算
     List<Vector2Int> CalcMoveRange(List<Vector2Int> moveType, int x, int y)
     {
 
         for (int i = 0; i < moveType.Count; i++)
         {
             calculatedRange.Add(moveType[i] + new Vector2Int(x, y));
+        }
+        return calculatedRange;
+    }
+
+    //選択された駒の種類、座標を元に移動範囲を計算
+    List<Vector2Int> CalAttackRange(List<Vector2Int> attackType, int x, int y)
+    {
+
+        for (int i = 0; i < attackType.Count; i++)
+        {
+            calculatedRange.Add(attackType[i] + new Vector2Int(x, y));
         }
         return calculatedRange;
     }

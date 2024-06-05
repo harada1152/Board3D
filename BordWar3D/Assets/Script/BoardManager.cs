@@ -27,7 +27,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private GameObject attackRangeFramePrefab;
     [SerializeField] List<GameObject> moveRangeFrames = new List<GameObject>();
     [SerializeField] List<GameObject> attackRangeFrames = new List<GameObject>();
-    private int rangeFrameObjCount = 32;
+    private int rangeFrameObjCount = 30;
 
 
     public bool error;
@@ -59,12 +59,12 @@ public class BoardManager : MonoBehaviour
     public void CheckPlayerSelect(int x, int y)
     {
         Debug.Log(infoRows[8 - y].infoColumns[x]);
-        int num = Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - y].infoColumns[x]) + 1;
-        if (0 < num)
+        if (Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - y].infoColumns[x]) + 1 > 0)
         {
             Debug.Log("Select=true");
             PieceManager.Instance.SetCurrentPiece(infoRows[8 - y].infoColumns[x]);
             ActiveMoveFrame(PieceManager.Instance.ReturnMoveRange(x, y), x, y);
+            ActiveAttackFrame(PieceManager.Instance.ReturnAttackRange(x, y), x, y);
 
             GameManager.Instance.select = true;
         }
@@ -73,12 +73,12 @@ public class BoardManager : MonoBehaviour
     public void CheckEnemySelect(int x, int y)
     {
         Debug.Log(infoRows[8 - y].infoColumns[x]);
-        int num = Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - y].infoColumns[x]) + 1;
-        if (0 < num)
+        if (Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - y].infoColumns[x]) + 1 > 0)
         {
             Debug.Log("Select=true");
             PieceManager.Instance.SetCurrentPiece(infoRows[8 - y].infoColumns[x]);
             ActiveMoveFrame(PieceManager.Instance.ReturnMoveRange(x, y), x, y);
+            ActiveAttackFrame(PieceManager.Instance.ReturnAttackRange(x, y), x, y);
             GameManager.Instance.select = true;
         }
     }
@@ -223,7 +223,7 @@ public class BoardManager : MonoBehaviour
             switch (GameManager.Instance.currentState)
             {
                 case GameConst.GameState.PLAYERTURN:
-                    if (infoRows[8 - infoY].infoColumns[infoX] == "" ||Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1>0
+                    if (infoRows[8 - infoY].infoColumns[infoX] == "" || Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1 > 0
                     && infoRows[8 - infoY].infoColumns[infoX] != "River")
                     {
                         moveRangeFrames[i].SetActive(true);
@@ -231,7 +231,7 @@ public class BoardManager : MonoBehaviour
                     break;
 
                 case GameConst.GameState.ENEMYTURN:
-                    if (infoRows[8 - infoY].infoColumns[infoX] == "" ||Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1>0
+                    if (infoRows[8 - infoY].infoColumns[infoX] == "" || Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1 > 0
                     && infoRows[8 - infoY].infoColumns[infoX] != "River")
                     {
                         moveRangeFrames[i].SetActive(true);
@@ -252,7 +252,56 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    //駒の選択解除されたときに表示されているフレームを全て隠す
+    void ActiveAttackFrame(List<Vector2Int> range, int x, int y)
+    {
+        for (int i = 0; i < range.Count; i++)
+        {
+
+            Vector3 pos;
+            pos.x = range[i].x;
+            pos.z = range[i].y;
+            int infoX = range[i].x;
+            int infoY = range[i].y;
+
+            Debug.Log(infoX + " " + infoY);
+
+            //もしボードの範囲外の座標だったら表示させず、次の座標の処理へ
+            if (infoX > 7 || infoY > 8 || infoX < 0 || infoY < 0) { continue; }
+
+            //移動先が空いていて、川でなければ表示する(相手の駒がいる場合も表示)
+            switch (GameManager.Instance.currentState)
+            {
+                case GameConst.GameState.PLAYERTURN:
+                    if (infoRows[8 - infoY].infoColumns[infoX] == "" || Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1 > 0
+                    && infoRows[8 - infoY].infoColumns[infoX] != "River")
+                    {
+                        attackRangeFrames[i].SetActive(true);
+                    }
+                    break;
+
+                case GameConst.GameState.ENEMYTURN:
+                    if (infoRows[8 - infoY].infoColumns[infoX] == "" || Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1 > 0
+                    && infoRows[8 - infoY].infoColumns[infoX] != "River")
+                    {
+                        attackRangeFrames[i].SetActive(true);
+                    }
+                    break;
+
+            }
+
+            //移動先が橋の場合は橋の高さの分、フレームの位置を調整する
+            if (pos.z == 4 && infoRows[y].infoColumns[x] != "River")
+            {
+                attackRangeFrames[i].transform.position = new Vector3(pos.x, 0f, pos.z);
+            }
+            else
+            {
+                attackRangeFrames[i].transform.position = new Vector3(pos.x, 0.03f, pos.z);
+            }
+        }
+    }
+
+    //駒の選択が解除されたときに表示されているフレームを全て隠す
     public void HideFrame()
     {
 

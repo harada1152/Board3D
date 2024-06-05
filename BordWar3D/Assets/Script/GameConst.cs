@@ -40,7 +40,8 @@ public static class GameConst
         Assault,
         Grenade,
         MachineGun,
-        Sniper,
+        Sniper1P,
+        Sniper2P,
         Commander
     }
 }
