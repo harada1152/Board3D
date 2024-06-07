@@ -192,12 +192,10 @@ public class BoardManager : MonoBehaviour
             GameObject obj = Instantiate(moveRangeFramePrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, gameObject.transform);
             obj.SetActive(false);
             moveRangeFrames.Add(obj);
-            Debug.Log(moveRangeFrames.Count);
 
             obj = Instantiate(attackRangeFramePrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, gameObject.transform);
             obj.SetActive(false);
             attackRangeFrames.Add(obj);
-            Debug.Log(attackRangeFrames.Count);
         }
 
     }
@@ -213,8 +211,6 @@ public class BoardManager : MonoBehaviour
             pos.z = range[i].y;
             int infoX = range[i].x;
             int infoY = range[i].y;
-
-            Debug.Log(infoX + " " + infoY);
 
             //もしボードの範囲外の座標だったら表示させず、次の座標の処理へ
             if (infoX > 7 || infoY > 8 || infoX < 0 || infoY < 0) { continue; }

@@ -7,8 +7,8 @@ using DG.Tweening;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    [HideInInspector] public bool select = false;
-
+    // [HideInInspector] 
+    public bool select = false;
     public GameConst.GameState currentState;
     private GameConst.TurnPhase beforeTurnPhase;
     private GameConst.TurnPhase currentTurnPhese;
@@ -228,8 +228,8 @@ public class GameManager : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit = new RaycastHit();
 
-        if (!select&&Physics.Raycast(ray, out hit, 50.0f) && hit.collider.gameObject.CompareTag("masu")||
-        select&&Physics.Raycast(ray, out hit, 50.0f) && hit.collider.gameObject.CompareTag("MoveRangeFrame"))
+        if (!select && Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("masu") ||
+        select && Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("MoveRangeFrame"))
         {
             GameObject clickedGameObject = hit.collider.gameObject;
             int x = (int)Mathf.Floor(clickedGameObject.transform.position.x);
