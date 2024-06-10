@@ -139,7 +139,7 @@ public class GameManager : MonoBehaviour
         if (IsGameEnd()) { return; }
 
         // TODO 仮でフェイズ遷移を追加
-        DOVirtual.DelayedCall(0.5f, () => { SetTurnPhese(GameConst.TurnPhase.Next); });
+        DOVirtual.DelayedCall(0.1f, () => { SetTurnPhese(GameConst.TurnPhase.Next); });
     }
 
     // TODO エンドフェイズ中の処理
@@ -201,9 +201,11 @@ public class GameManager : MonoBehaviour
         switch (currentState)
         {
             case GameConst.GameState.PLAYERTURN:
+                CameraController.Instance.ChangeCameraPos();
                 SetCurrentTurn(GameConst.GameState.ENEMYTURN);
                 break;
             case GameConst.GameState.ENEMYTURN:
+                CameraController.Instance.ChangeCameraPos();
                 SetCurrentTurn(GameConst.GameState.PLAYERTURN);
                 break;
             default:
