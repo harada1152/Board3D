@@ -27,6 +27,12 @@ public static class GameConst
         ENEMYTURN,
     }
 
+    public enum ActionType
+    {
+        Attack,
+        Move,
+    }
+
     public enum TurnPhase
     {
         Start,

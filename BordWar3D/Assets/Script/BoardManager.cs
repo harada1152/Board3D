@@ -152,6 +152,16 @@ public class BoardManager : MonoBehaviour
         error = false;
     }
 
+    public void ChackAttackLegality()
+    {
+
+    }
+
+    public void PieceAttack()
+    {
+
+    }
+
     //駒の移動とアニメーション
     public void PieceMoveAnimation(int x, int y, System.Action callback)
     {
@@ -215,7 +225,7 @@ public class BoardManager : MonoBehaviour
             //もしボードの範囲外の座標だったら表示させず、次の座標の処理へ
             if (infoX > 7 || infoY > 8 || infoX < 0 || infoY < 0) { continue; }
 
-            //移動先が空いていて、川でなければ表示する(相手の駒がいる場合も表示)
+            //移動先が空いていて、川でなければフレームを表示する(相手の駒がいる場合も表示)
             switch (GameManager.Instance.currentState)
             {
                 case GameConst.GameState.PLAYERTURN:
@@ -236,6 +246,26 @@ public class BoardManager : MonoBehaviour
 
             }
 
+            //Assault用判定(岩や川、駒を飛び越えられないようにする)
+            //上下左右のマスに障害物がないか判定
+            if (PieceManager.Instance.currentPieceClass == GameConst.pieceClass.Assault && i > 7)
+            {
+                if (infoRows[8 - infoY].infoColumns[infoX] == "River" || infoRows[8 - infoY].infoColumns[infoX] == "Rock"
+                || Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1 > 0
+                || Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1 > 0)
+                {
+                    moveRangeFrames[i - 4].SetActive(false);
+                }
+            }
+            //斜め4方向に進めるか判定
+            if (PieceManager.Instance.currentPieceClass == GameConst.pieceClass.Assault && i > 8)
+            {
+                if (!moveRangeFrames[i - 1].activeSelf && !moveRangeFrames[i].activeSelf)
+                {
+                    moveRangeFrames[i - 8].SetActive(false);
+                }
+            }
+
             //移動先が橋の場合は橋の高さの分、フレームの位置を調整する
             if (pos.z == 4 && infoRows[y].infoColumns[x] != "River")
             {
@@ -245,6 +275,12 @@ public class BoardManager : MonoBehaviour
             {
                 moveRangeFrames[i].transform.position = new Vector3(pos.x, -0.3f, pos.z);
             }
+        }
+        //Assault用判定(左上のマスに進めるか判定)
+        if (PieceManager.Instance.currentPieceClass == GameConst.pieceClass.Assault
+            && !moveRangeFrames[8].activeSelf && !moveRangeFrames[11].activeSelf)
+        {
+            moveRangeFrames[0].SetActive(false);
         }
     }
 

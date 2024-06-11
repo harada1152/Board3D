@@ -8,15 +8,15 @@ public class PieceManager : MonoBehaviour
     public static PieceManager Instance;
     public string[] playerPieceName = new string[] { "Assault1_A", "Assault1_B", "Commander1", "Sniper1", "Grenade1", "MachineGun1" };
     public string[] enemyPieceName = new string[] { "Assault2_A", "Assault2_B", "Commander2", "Sniper2", "Grenade2", "MachineGun2" };
-    [SerializeField] public GameConst.pieceClass currentPieceClass;
+    public GameConst.pieceClass currentPieceClass;
 
     public List<Vector2Int> moveTypeA = new List<Vector2Int>();
     public List<Vector2Int> moveTypeB = new List<Vector2Int>();
-    public List<Vector2Int> AttackTypeSniper1P = new List<Vector2Int> ();
-    public List<Vector2Int> AttackTypeSniper2P = new List<Vector2Int> ();
+    public List<Vector2Int> AttackTypeSniper1P = new List<Vector2Int>();
+    public List<Vector2Int> AttackTypeSniper2P = new List<Vector2Int>();
 
     public List<Vector2Int> AttackTypeMachineGun = new List<Vector2Int>();
-    public List<Vector2Int> AttackTypeGrenade = new List<Vector2Int>();                                                           
+    public List<Vector2Int> AttackTypeGrenade = new List<Vector2Int>();
     public List<Vector2Int> moveRange = new List<Vector2Int>();
     public List<Vector2Int> attackRange = new List<Vector2Int>();
 
@@ -49,11 +49,11 @@ public class PieceManager : MonoBehaviour
         {
             currentPieceClass = GameConst.pieceClass.Commander;
         }
-        else if (pieceName == "Sniper1" )
+        else if (pieceName == "Sniper1")
         {
             currentPieceClass = GameConst.pieceClass.Sniper1P;
         }
-        else if(pieceName == "Sniper2")
+        else if (pieceName == "Sniper2")
         {
             currentPieceClass = GameConst.pieceClass.Sniper2P;
         }

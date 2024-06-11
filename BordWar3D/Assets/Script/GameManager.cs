@@ -12,7 +12,8 @@ public class GameManager : MonoBehaviour
     public GameConst.GameState currentState;
     private GameConst.TurnPhase beforeTurnPhase;
     private GameConst.TurnPhase currentTurnPhese;
-    private int basePosx, basePosy, movePosx, movePosy;
+    private GameConst.ActionType currentActionType;
+    private int basePosx, basePosy, actionPosx, actionPosy;
     private bool isGameEnd = false;
     private GameConst.PlayerType winner = GameConst.PlayerType.None;
 
@@ -101,8 +102,9 @@ public class GameManager : MonoBehaviour
     // アクションフェイズ中の処理
     private void UpdateActionPhase()
     {
+        SetActionType();
         // クリック取得がなければ処理なし
-        if (!Input.GetMouseButtonDown(0)) { return; }
+        if (!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1)) { return; }
 
         // クリック取得後にマス情報が無ければ処理なし
         Vector2Int clickedPos = Vector2Int.zero;
@@ -223,15 +225,27 @@ public class GameManager : MonoBehaviour
     // フェイズの初期化フラグを下す
     private void ResetPhaseChangeFlag() { beforeTurnPhase = currentTurnPhese; }
 
+    private void SetActionType()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            currentActionType = GameConst.ActionType.Move;
+        }
+        else if (Input.GetMouseButtonDown(1))
+        {
+            currentActionType = GameConst.ActionType.Attack;
+        }
+    }
+
     // クリック情報から、マス情報の取得を試みる
     private bool TryGetClickedPos(out Vector2Int pos)
     {
         pos = Vector2Int.zero;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit = new RaycastHit();
-
-        if (!select && Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("masu") ||
-        select && Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("MoveRangeFrame"))
+        if (!select && Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("masu")
+        || select && currentActionType == GameConst.ActionType.Move && Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("MoveRangeFrame")
+        || select && currentActionType == GameConst.ActionType.Attack && Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("AttackRangeFrame"))
         {
             GameObject clickedGameObject = hit.collider.gameObject;
             int x = (int)Mathf.Floor(clickedGameObject.transform.position.x);
@@ -259,9 +273,9 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            movePosx = clickedPos.x;
-            movePosy = clickedPos.y;
-            Debug.Log("移動前" + (8 - basePosy) + " " + basePosx + " 移動後 " + (8 - movePosy) + " " + movePosx);
+            actionPosx = clickedPos.x;
+            actionPosy = clickedPos.y;
+            Debug.Log("移動前" + (8 - basePosy) + " " + basePosx + " 移動後 " + (8 - actionPosy) + " " + actionPosx);
         }
     }
 
@@ -278,7 +292,11 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (select) { BoardManager.Instance.PieceMoveAnimation(movePosx, movePosy, onCompleteCallback); }
+        if (select && currentActionType == GameConst.ActionType.Move)
+        {
+            BoardManager.Instance.PieceMoveAnimation(actionPosx, actionPosy, onCompleteCallback);
+        }
+        else if (select && currentActionType == GameConst.ActionType.Attack) { BoardManager.Instance.PieceAttack(); }
         BoardManager.Instance.HideFrame();
         select = false;
     }
@@ -290,8 +308,17 @@ public class GameManager : MonoBehaviour
             BoardManager.Instance.CheckPlayerSelect(basePosx, basePosy);
         else
         {
-            BoardManager.Instance.CheckPlayerMoveLegality(basePosx, basePosy, movePosx, movePosy);
-            BaseAfterInput(onCompleteCallback);
+            switch (currentActionType)
+            {
+                case GameConst.ActionType.Move:
+                    BoardManager.Instance.CheckPlayerMoveLegality(basePosx, basePosy, actionPosx, actionPosy);
+                    BaseAfterInput(onCompleteCallback);
+                    break;
+                case GameConst.ActionType.Attack:
+
+                    break;
+            }
+
         }
     }
 
@@ -302,7 +329,7 @@ public class GameManager : MonoBehaviour
             BoardManager.Instance.CheckEnemySelect(basePosx, basePosy);
         else
         {
-            BoardManager.Instance.CheckEnemyMoveLegality(basePosx, basePosy, movePosx, movePosy);
+            BoardManager.Instance.CheckEnemyMoveLegality(basePosx, basePosy, actionPosx, actionPosy);
             BaseAfterInput(onCompleteCallback);
         }
     }
