@@ -3523,34 +3523,18 @@ MonoBehaviour:
   - {x: 0, y: -3}
   - {x: 0, y: -4}
   AttackTypeMachineGun:
-  - {x: -1, y: 1}
-  - {x: -2, y: 2}
-  - {x: -3, y: 3}
-  - {x: -4, y: 4}
-  - {x: -5, y: 5}
-  - {x: -6, y: 6}
-  - {x: -7, y: 7}
-  - {x: -1, y: -1}
-  - {x: -2, y: -2}
-  - {x: -3, y: -3}
-  - {x: -4, y: -4}
-  - {x: -5, y: -5}
-  - {x: -6, y: -6}
-  - {x: -7, y: -7}
   - {x: 1, y: 1}
   - {x: 2, y: 2}
   - {x: 3, y: 3}
-  - {x: 4, y: 4}
-  - {x: 5, y: 5}
-  - {x: 6, y: 6}
-  - {x: 7, y: 7}
+  - {x: 1, y: -1}
+  - {x: 2, y: -2}
+  - {x: 3, y: -3}
   - {x: -1, y: -1}
   - {x: -2, y: -2}
   - {x: -3, y: -3}
-  - {x: -4, y: -4}
-  - {x: -5, y: -5}
-  - {x: -6, y: -6}
-  - {x: -7, y: -7}
+  - {x: -1, y: 1}
+  - {x: -2, y: 2}
+  - {x: -3, y: 3}
   AttackTypeGrenade:
   - {x: -1, y: -2}
   - {x: -1, y: 2}
@@ -8051,7 +8035,7 @@ MonoBehaviour:
     - 
     - Rock
     - 
-    - 
+    - MachineGun1
     - Rock
     - 
     - 
@@ -8069,7 +8053,7 @@ MonoBehaviour:
     - 
     - Grenade1
     - Commander1
-    - MachineGun1
+    - 
     - Sniper1
     - 
     - 
