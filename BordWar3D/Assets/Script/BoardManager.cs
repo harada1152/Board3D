@@ -98,6 +98,7 @@ public class BoardManager : MonoBehaviour
                 Debug.Log("error!!");
             }
         }
+        //infoから取られる駒を取得
         for (int i = 0; i < 6; i++)
         {
             if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.enemyPieceName[i])
@@ -133,6 +134,7 @@ public class BoardManager : MonoBehaviour
                 Debug.Log("error!!");
             }
         }
+        //infoから取られる駒を取得
         for (int i = 0; i < 6; i++)
         {
             if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.playerPieceName[i])
@@ -150,14 +152,45 @@ public class BoardManager : MonoBehaviour
         error = false;
     }
 
-    public void ChackAttackLegality()
+    public void ChackAttackLegality(int x, int y)
     {
-
+        Debug.Log("tintin");
+        //選択した攻撃範囲のマスに相手の駒があるか判定
+        switch (GameManager.Instance.currentState)
+        {
+            case GameConst.GameState.PLAYERTURN:
+                //infoから取られる駒を取得
+                for (int i = 0; i < 6; i++)
+                {
+                    if (infoRows[8 - y].infoColumns[x] == PieceManager.Instance.enemyPieceName[i])
+                    {
+                        deathObj = GameObject.Find(infoRows[8 - y].infoColumns[x] + "(Clone)");
+                    }
+                }
+                break;
+            case GameConst.GameState.ENEMYTURN:
+                //infoから取られる駒を取得
+                for (int i = 0; i < 6; i++)
+                {
+                    if (infoRows[8 - y].infoColumns[x] == PieceManager.Instance.playerPieceName[i])
+                    {
+                        deathObj = GameObject.Find(infoRows[8 - y].infoColumns[x] + "(Clone)");
+                    }
+                }
+                break;
+        }
+        //問題がなければinfoを書き換える
+        if (!error)
+        {
+            Debug.Log("Attack");
+            infoRows[8 - y].infoColumns[x] = "";
+        }
     }
 
-    public void PieceAttack()
+    public void PieceAttack(int x, int y, System.Action callback)
     {
-
+        Destroy(deathObj);
+        callback?.Invoke();
     }
 
     //駒の移動とアニメーション
@@ -292,7 +325,7 @@ public class BoardManager : MonoBehaviour
             pos.z = range[i].y;
             int infoX = range[i].x;
             int infoY = range[i].y;
-            bool activeComplete=false;
+            bool activeComplete = false;
 
             //もしボードの範囲外の座標だったら表示させず、次の座標の処理へ
             if (infoX > 7 || infoY > 8 || infoX < 0 || infoY < 0) { continue; }
@@ -300,7 +333,7 @@ public class BoardManager : MonoBehaviour
             //移動先が橋の場合は橋の高さの分、フレームの位置を調整する
             if (pos.z == 4 && infoRows[y].infoColumns[x] != "River")
             {
-                attackRangeFrames[i].transform.position = new Vector3(pos.x, 0.3f, pos.z);
+                attackRangeFrames[i].transform.position = new Vector3(pos.x, 0.35f, pos.z);
             }
             else
             {
@@ -319,27 +352,29 @@ public class BoardManager : MonoBehaviour
                     if (infoRows[8 - infoY].infoColumns[infoX] == "Rock"
                     || Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1 > 0)
                     {
-                        activeComplete=true;
+                        activeComplete = true;
                     }
                     else if (Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1 > 0)
                     {
                         attackRangeFrames[i].SetActive(true);
+                        activeComplete = true;
                     }
                     break;
                 case GameConst.pieceClass.Sniper2P:
                     if (infoRows[8 - infoY].infoColumns[infoX] == "Rock"
                     || Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1 > 0)
                     {
-                        activeComplete=true;
+                        activeComplete = true;
                     }
                     else if (Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - infoY].infoColumns[infoX]) + 1 > 0)
                     {
                         attackRangeFrames[i].SetActive(true);
+                        activeComplete = true;
                     }
                     break;
             }
 
-            if (activeComplete){break;}
+            if (activeComplete) { break; }
 
             //移動先が空いていれば表示する(相手の駒がいる場合も表示,味方の駒がいるときは表示しない)
             switch (GameManager.Instance.currentState)

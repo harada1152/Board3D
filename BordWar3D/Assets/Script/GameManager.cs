@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public GameConst.GameState currentState;
     private GameConst.TurnPhase beforeTurnPhase;
     private GameConst.TurnPhase currentTurnPhese;
-    private GameConst.ActionType currentActionType;
+    [SerializeField] private GameConst.ActionType currentActionType;
     private int basePosx, basePosy, actionPosx, actionPosy;
     private bool isGameEnd = false;
     private GameConst.PlayerType winner = GameConst.PlayerType.None;
@@ -168,6 +168,8 @@ public class GameManager : MonoBehaviour
     private void CheckGameEnd()
     {
         winner = GameConst.PlayerType.None;
+
+        CheckVictory();
         // TODO 勝利判定ロジック
         // TODO リーダーユニットが撃破されているプレイヤーは負け
 
@@ -296,7 +298,11 @@ public class GameManager : MonoBehaviour
         {
             BoardManager.Instance.PieceMoveAnimation(actionPosx, actionPosy, onCompleteCallback);
         }
-        else if (select && currentActionType == GameConst.ActionType.Attack) { BoardManager.Instance.PieceAttack(); }
+        else if (select && currentActionType == GameConst.ActionType.Attack)
+        {
+            Debug.Log("Attack!!");
+            BoardManager.Instance.PieceAttack(actionPosx,actionPosy, onCompleteCallback);
+        }
         BoardManager.Instance.HideFrame();
         select = false;
     }
@@ -315,7 +321,8 @@ public class GameManager : MonoBehaviour
                     BaseAfterInput(onCompleteCallback);
                     break;
                 case GameConst.ActionType.Attack:
-
+                    BoardManager.Instance.ChackAttackLegality(actionPosx, actionPosy);
+                    BaseAfterInput(onCompleteCallback);
                     break;
             }
 
@@ -329,8 +336,38 @@ public class GameManager : MonoBehaviour
             BoardManager.Instance.CheckEnemySelect(basePosx, basePosy);
         else
         {
-            BoardManager.Instance.CheckEnemyMoveLegality(basePosx, basePosy, actionPosx, actionPosy);
-            BaseAfterInput(onCompleteCallback);
+            switch (currentActionType)
+            {
+                case GameConst.ActionType.Move:
+                    BoardManager.Instance.CheckEnemyMoveLegality(basePosx, basePosy, actionPosx, actionPosy);
+                    BaseAfterInput(onCompleteCallback);
+                    break;
+                case GameConst.ActionType.Attack:
+                    BoardManager.Instance.ChackAttackLegality(actionPosx, actionPosy);
+                    BaseAfterInput(onCompleteCallback);
+                    break;
+            }
+        }
+    }
+
+    private void CheckVictory()
+    {
+        switch(currentState)
+        {
+            case GameConst.GameState.PLAYERTURN:
+            if(GameObject.Find("Commander2(Clone)")==null)
+            {
+                Debug.Log("Player1Win!!");
+                winner= GameConst.PlayerType.PLAYER;
+            }
+            break;
+            case GameConst.GameState.ENEMYTURN:
+            if(GameObject.Find("Commander1(Clone)")== null)
+            {
+                Debug.Log("Player2Win!!");
+                winner= GameConst.PlayerType.ENEMY;
+            }
+            break;
         }
     }
 }

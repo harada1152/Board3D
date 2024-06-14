@@ -8035,7 +8035,7 @@ MonoBehaviour:
     - 
     - Rock
     - 
-    - MachineGun1
+    - 
     - Rock
     - 
     - 
@@ -8053,7 +8053,7 @@ MonoBehaviour:
     - 
     - Grenade1
     - Commander1
-    - 
+    - MachineGun1
     - Sniper1
     - 
     - 
@@ -11231,6 +11231,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   select: 0
   currentState: 0
+  currentActionType: 0
 --- !u!4 &1883761149
 Transform:
   m_ObjectHideFlags: 0
