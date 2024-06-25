@@ -8,6 +8,8 @@ TagManager:
   - koma
   - MoveRangeFrame
   - AttackRangeFrame
+  - Tile
+  - Piece
   layers:
   - Default
   - TransparentFX

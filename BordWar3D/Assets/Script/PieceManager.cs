@@ -9,18 +9,17 @@ public class PieceManager : MonoBehaviour
     public string[] playerPieceName = new string[] { "Assault1_A", "Assault1_B", "Commander1", "Sniper1", "Grenade1", "MachineGun1" };
     public string[] enemyPieceName = new string[] { "Assault2_A", "Assault2_B", "Commander2", "Sniper2", "Grenade2", "MachineGun2" };
     public GameConst.pieceClass currentPieceClass;
-
     public List<Vector2Int> moveTypeA = new List<Vector2Int>();
     public List<Vector2Int> moveTypeB = new List<Vector2Int>();
     public List<Vector2Int> AttackTypeSniper1P = new List<Vector2Int>();
     public List<Vector2Int> AttackTypeSniper2P = new List<Vector2Int>();
-
     public List<Vector2Int> AttackTypeMachineGun = new List<Vector2Int>();
     public List<Vector2Int> AttackTypeGrenade = new List<Vector2Int>();
     public List<Vector2Int> moveRange = new List<Vector2Int>();
     public List<Vector2Int> attackRange = new List<Vector2Int>();
-
     public List<Vector2Int> calculatedRange = new List<Vector2Int>();
+
+    public int selectPieceID;
 
     void Awake()
     {
@@ -100,6 +99,7 @@ public class PieceManager : MonoBehaviour
         return null;
     }
 
+    //選択した駒の攻撃可能な範囲を計算してリストで返す
     public List<Vector2Int> ReturnAttackRange(int x, int y)
     {
         switch (currentPieceClass)
@@ -107,19 +107,19 @@ public class PieceManager : MonoBehaviour
             case GameConst.pieceClass.Assault:
                 return calculatedRange;
             case GameConst.pieceClass.Grenade:
-                attackRange = new List<Vector2Int>(CalAttackRange(AttackTypeGrenade, x, y));
+                attackRange = new List<Vector2Int>(CalcAttackRange(AttackTypeGrenade, x, y));
                 calculatedRange.Clear();
                 return attackRange;
             case GameConst.pieceClass.MachineGun:
-                attackRange = new List<Vector2Int>(CalAttackRange(AttackTypeMachineGun, x, y));
+                attackRange = new List<Vector2Int>(CalcAttackRange(AttackTypeMachineGun, x, y));
                 calculatedRange.Clear();
                 return attackRange;
             case GameConst.pieceClass.Sniper1P:
-                attackRange = new List<Vector2Int>(CalAttackRange(AttackTypeSniper1P, x, y));
+                attackRange = new List<Vector2Int>(CalcAttackRange(AttackTypeSniper1P, x, y));
                 calculatedRange.Clear();
                 return attackRange;
             case GameConst.pieceClass.Sniper2P:
-                attackRange = new List<Vector2Int>(CalAttackRange(AttackTypeSniper2P, x, y));
+                attackRange = new List<Vector2Int>(CalcAttackRange(AttackTypeSniper2P, x, y));
                 calculatedRange.Clear();
                 return attackRange;
             case GameConst.pieceClass.Commander:
@@ -139,8 +139,8 @@ public class PieceManager : MonoBehaviour
         return calculatedRange;
     }
 
-    //選択された駒の種類、座標を元に移動範囲を計算
-    List<Vector2Int> CalAttackRange(List<Vector2Int> attackType, int x, int y)
+    //選択された駒の種類、座標を元に攻撃範囲を計算
+    List<Vector2Int> CalcAttackRange(List<Vector2Int> attackType, int x, int y)
     {
 
         for (int i = 0; i < attackType.Count; i++)

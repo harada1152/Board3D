@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5996090790408755448}
   - component: {fileID: 2422646906426234707}
   - component: {fileID: 8163902140651560631}
-  - component: {fileID: 8402248691677482980}
+  - component: {fileID: 2996372472710067427}
   m_Layer: 0
   m_Name: MoveRangeFrame
   m_TagString: MoveRangeFrame
@@ -86,8 +86,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &8402248691677482980
-CapsuleCollider:
+--- !u!65 &2996372472710067427
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -104,8 +104,6 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+  serializedVersion: 3
+  m_Size: {x: 1.0000001, y: 0.4, z: 1.0000002}
+  m_Center: {x: 0.000000059604645, y: 0.81, z: -0.00000008940697}

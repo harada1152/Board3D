@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class TileSelector : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class TileSelector : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        selectFrame=Instantiate(selectFramePrefab,point,Quaternion.identity, gameObject.transform);
+        selectFrame = Instantiate(selectFramePrefab, point, Quaternion.identity, gameObject.transform);
         selectFrame.SetActive(false);
     }
 
@@ -22,29 +23,30 @@ public class TileSelector : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit = new RaycastHit();
 
-        if (Physics.Raycast(ray, out hit, 50.0f) && hit.collider.gameObject.CompareTag("masu"))
+        //選択中のタイルを光らせる
+        if (Physics.Raycast(ray, out hit, 50.0f) && hit.collider.gameObject.CompareTag("Tile"))
         {
-            point=hit.point;
+            point = hit.point;
             int x = (int)Mathf.RoundToInt(point.x);
             int y = (int)Mathf.RoundToInt(point.z);
 
-            if(x<0){x=0;}
-            if(y<0){y=0;}
+            if (x < 0) { x = 0; }
+            if (y < 0) { y = 0; }
 
             selectFrame.SetActive(true);
-            if(y==4&&BoardManager.Instance.infoRows[y].infoColumns[x]!="River")
+            if (y == 4 && BoardManager.Instance.infoRows[y].infoColumns[x] != "River")
             {
-                selectFrame.transform.position=new Vector3(x,0.35f,y);   
+                selectFrame.transform.position = new Vector3(x, 0.35f, y);
             }
             else
             {
-                selectFrame.transform.position = new Vector3(x,0.05f,y);
+                selectFrame.transform.position = new Vector3(x, 0.05f, y);
             }
-            
+
         }
         else
         {
-            selectFrame.SetActive(false) ;
+            selectFrame.SetActive(false);
         }
     }
 }

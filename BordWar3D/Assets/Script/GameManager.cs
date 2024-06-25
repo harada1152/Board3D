@@ -244,23 +244,27 @@ public class GameManager : MonoBehaviour
     {
         pos = Vector2Int.zero;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit = new RaycastHit();
-        if (!select && Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("masu")
-        || select && currentActionType == GameConst.ActionType.Move && Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("MoveRangeFrame")
-        || select && currentActionType == GameConst.ActionType.Attack && Physics.Raycast(ray, out hit, 100.0f) && hit.collider.gameObject.CompareTag("AttackRangeFrame"))
+        RaycastHit[] hits = Physics.RaycastAll(ray, 50f);
+        for (int i = 0; i < hits.Length; i++)
         {
-            GameObject clickedGameObject = hit.collider.gameObject;
-            int x = (int)Mathf.Floor(clickedGameObject.transform.position.x);
-            int y = (int)Mathf.Floor(clickedGameObject.transform.position.z);
+            if (!select && hits[i].collider.gameObject.CompareTag("Tile")
+            || select && currentActionType == GameConst.ActionType.Move && hits[i].collider.gameObject.CompareTag("MoveRangeFrame")
+            || select && currentActionType == GameConst.ActionType.Attack && hits[i].collider.gameObject.CompareTag("AttackRangeFrame"))
+            {
+                GameObject clickedGameObject = hits[i].collider.gameObject;
+                int x = (int)Mathf.Floor(clickedGameObject.transform.position.x);
+                int y = (int)Mathf.Floor(clickedGameObject.transform.position.z);
 
-            pos = new Vector2Int(x, y);
-            return true;
+                pos = new Vector2Int(x, y);
+                return true;
+            }
+            else if (i==hits.Length-1)
+            {
+                select = false;
+                BoardManager.Instance.HideFrame();
+            }
         }
-        else
-        {
-            select = false;
-            BoardManager.Instance.HideFrame();
-        }
+
         return false;
     }
 
@@ -301,7 +305,7 @@ public class GameManager : MonoBehaviour
         else if (select && currentActionType == GameConst.ActionType.Attack)
         {
             Debug.Log("Attack!!");
-            BoardManager.Instance.PieceAttack(actionPosx,actionPosy, onCompleteCallback);
+            BoardManager.Instance.PieceAttack(actionPosx, actionPosy, onCompleteCallback);
         }
         BoardManager.Instance.HideFrame();
         select = false;
@@ -332,6 +336,7 @@ public class GameManager : MonoBehaviour
     // 保持したマス情報をエネミー処理へ
     private void EnemyInput(System.Action onCompleteCallback)
     {
+
         if (!select)
             BoardManager.Instance.CheckEnemySelect(basePosx, basePosy);
         else
@@ -352,22 +357,22 @@ public class GameManager : MonoBehaviour
 
     private void CheckVictory()
     {
-        switch(currentState)
+        switch (currentState)
         {
             case GameConst.GameState.PLAYERTURN:
-            if(GameObject.Find("Commander2(Clone)")==null)
-            {
-                Debug.Log("Player1Win!!");
-                winner= GameConst.PlayerType.PLAYER;
-            }
-            break;
+                if (GameObject.Find("Commander2") == null)
+                {
+                    Debug.Log("Player1Win!!");
+                    winner = GameConst.PlayerType.PLAYER;
+                }
+                break;
             case GameConst.GameState.ENEMYTURN:
-            if(GameObject.Find("Commander1(Clone)")== null)
-            {
-                Debug.Log("Player2Win!!");
-                winner= GameConst.PlayerType.ENEMY;
-            }
-            break;
+                if (GameObject.Find("Commander1") == null)
+                {
+                    Debug.Log("Player2Win!!");
+                    winner = GameConst.PlayerType.ENEMY;
+                }
+                break;
         }
     }
 }
