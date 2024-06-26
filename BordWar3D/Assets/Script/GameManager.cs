@@ -275,13 +275,11 @@ public class GameManager : MonoBehaviour
         {
             basePosx = clickedPos.x;
             basePosy = clickedPos.y;
-            Debug.Log("移動前" + (8 - basePosy) + " " + basePosx);
         }
         else
         {
             actionPosx = clickedPos.x;
             actionPosy = clickedPos.y;
-            Debug.Log("移動前" + (8 - basePosy) + " " + basePosx + " 移動後 " + (8 - actionPosy) + " " + actionPosx);
         }
     }
 
@@ -304,7 +302,6 @@ public class GameManager : MonoBehaviour
         }
         else if (select && currentActionType == GameConst.ActionType.Attack)
         {
-            Debug.Log("Attack!!");
             BoardManager.Instance.PieceAttack(actionPosx, actionPosy, onCompleteCallback);
         }
         BoardManager.Instance.HideFrame();

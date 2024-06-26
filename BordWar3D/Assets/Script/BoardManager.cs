@@ -55,7 +55,7 @@ public class BoardManager : MonoBehaviour
     {
 
     }
-    //選んだ駒は自分の駒か？
+    //選んだ駒は自分の駒かチェック？
     public void CheckPlayerSelect(int x, int y)
     {
         if (Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - y].infoColumns[x]) + 1 > 0)
@@ -77,7 +77,7 @@ public class BoardManager : MonoBehaviour
             PieceManager.Instance.SetCurrentPiece(infoRows[8 - y].infoColumns[x]);
             ActiveMoveFrame(PieceManager.Instance.ReturnMoveRange(x, y), x, y);
             ActiveAttackFrame(PieceManager.Instance.ReturnAttackRange(x, y), x, y);
-            
+
             GameManager.Instance.select = true;
         }
     }
@@ -104,7 +104,7 @@ public class BoardManager : MonoBehaviour
         {
             if (infoRows[8 - y2].infoColumns[x2] == PieceManager.Instance.enemyPieceName[i])
             {
-                deathObj = GameObject.Find(infoRows[8 - y2].infoColumns[x2] );
+                deathObj = GameObject.Find(infoRows[8 - y2].infoColumns[x2]);
             }
         }
         //問題がなければinfoを書き換える
@@ -155,7 +155,7 @@ public class BoardManager : MonoBehaviour
 
     public void ChackAttackLegality(int x, int y)
     {
-        Debug.Log("tintin");
+        bool findPiece = false;
         //選択した攻撃範囲のマスに相手の駒があるか判定
         switch (GameManager.Instance.currentState)
         {
@@ -165,7 +165,15 @@ public class BoardManager : MonoBehaviour
                 {
                     if (infoRows[8 - y].infoColumns[x] == PieceManager.Instance.enemyPieceName[i])
                     {
+                        findPiece = true;
                         deathObj = GameObject.Find(infoRows[8 - y].infoColumns[x]);
+                    }
+
+                    if (i == 5 && !findPiece)
+                    {
+                        error = true;
+                        GameManager.Instance.select = false;
+                        HideFrame();
                     }
                 }
                 break;
@@ -175,7 +183,15 @@ public class BoardManager : MonoBehaviour
                 {
                     if (infoRows[8 - y].infoColumns[x] == PieceManager.Instance.playerPieceName[i])
                     {
+                        findPiece = true;
                         deathObj = GameObject.Find(infoRows[8 - y].infoColumns[x]);
+                    }
+
+                    if (i == 5 && !findPiece)
+                    {
+                        error = true;
+                        GameManager.Instance.select = false;
+                        HideFrame();
                     }
                 }
                 break;
@@ -440,75 +456,75 @@ public class BoardManager : MonoBehaviour
                 else if (infoRows[i].infoColumns[j] == "Commander1")
                 {
                     pos.y = 0.96f;
-                    var obj=Instantiate(CommanderPrefab[0], pos, Quaternion.identity);
-                    obj.name="Commander1";
+                    var obj = Instantiate(CommanderPrefab[0], pos, Quaternion.identity);
+                    obj.name = "Commander1";
                 }
                 else if (infoRows[i].infoColumns[j] == "Sniper1")
                 {
                     pos.y = 0.92f;
-                    var obj=Instantiate(SniperPrefab[0], pos, Quaternion.identity);
-                    obj.name="Sniper1";
+                    var obj = Instantiate(SniperPrefab[0], pos, Quaternion.identity);
+                    obj.name = "Sniper1";
                 }
                 else if (infoRows[i].infoColumns[j] == "MachineGun1")
                 {
                     pos.y = 0.96f;
-                    var obj=Instantiate(MachineGunPrefab[0], pos, Quaternion.identity);
-                    obj.name="MachineGun1";
+                    var obj = Instantiate(MachineGunPrefab[0], pos, Quaternion.identity);
+                    obj.name = "MachineGun1";
                 }
                 else if (infoRows[i].infoColumns[j] == "Assault1_A")
                 {
                     pos.y = 0.96f;
-                    var obj=Instantiate(AssaultPrefab[0], pos, Quaternion.identity);
-                    obj.name="Assault1_A";
+                    var obj = Instantiate(AssaultPrefab[0], pos, Quaternion.identity);
+                    obj.name = "Assault1_A";
                 }
                 else if (infoRows[i].infoColumns[j] == "Assault1_B")
                 {
                     pos.y = 0.96f;
-                    var obj=Instantiate(AssaultPrefab[1], pos, Quaternion.identity);
-                    obj.name="Assault1_B";
+                    var obj = Instantiate(AssaultPrefab[1], pos, Quaternion.identity);
+                    obj.name = "Assault1_B";
                 }
                 else if (infoRows[i].infoColumns[j] == "Grenade1")
                 {
                     pos.y = 0.96f;
-                    var obj=Instantiate(GrenadePrefab[0], pos, Quaternion.identity);
-                    obj.name="Grenade1";
+                    var obj = Instantiate(GrenadePrefab[0], pos, Quaternion.identity);
+                    obj.name = "Grenade1";
                 }
                 //2P
                 else if (infoRows[i].infoColumns[j] == "Commander2")
                 {
                     pos.y = 0.96f;
-                    var obj=Instantiate(CommanderPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
-                    obj.name="Commander2";
+                    var obj = Instantiate(CommanderPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
+                    obj.name = "Commander2";
                 }
                 else if (infoRows[i].infoColumns[j] == "Sniper2")
                 {
                     pos.y = 0.92f;
-                    var obj=Instantiate(SniperPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
-                    obj.name="Sniper2";
+                    var obj = Instantiate(SniperPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
+                    obj.name = "Sniper2";
                 }
                 else if (infoRows[i].infoColumns[j] == "MachineGun2")
                 {
                     pos.y = 0.96f;
-                    var obj=Instantiate(MachineGunPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
-                    obj.name="MachineGun2";
+                    var obj = Instantiate(MachineGunPrefab[1], pos, Quaternion.Euler(0, 180f, 0));
+                    obj.name = "MachineGun2";
                 }
                 else if (infoRows[i].infoColumns[j] == "Assault2_A")
                 {
                     pos.y = 0.96f;
-                    var obj=Instantiate(AssaultPrefab[2], pos, Quaternion.Euler(0, 180f, 0));
-                    obj.name="Assault2_A";
+                    var obj = Instantiate(AssaultPrefab[2], pos, Quaternion.Euler(0, 180f, 0));
+                    obj.name = "Assault2_A";
                 }
                 else if (infoRows[i].infoColumns[j] == "Assault2_B")
                 {
                     pos.y = 0.96f;
-                    var obj=Instantiate(AssaultPrefab[3], pos, Quaternion.Euler(0, 180f, 0));
-                    obj.name="Assault2_B";
+                    var obj = Instantiate(AssaultPrefab[3], pos, Quaternion.Euler(0, 180f, 0));
+                    obj.name = "Assault2_B";
                 }
                 else if (infoRows[i].infoColumns[j] == "Grenade2")
                 {
                     pos.y = 0.96f;
-                    var obj=Instantiate(GrenadePrefab[1], pos, Quaternion.Euler(0, 180f, 0));
-                    obj.name="Grenade2";
+                    var obj = Instantiate(GrenadePrefab[1], pos, Quaternion.Euler(0, 180f, 0));
+                    obj.name = "Grenade2";
                 }
             }
         }

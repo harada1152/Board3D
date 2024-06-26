@@ -2,16 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System.Security.Cryptography.X509Certificates;
 
 public class UiManager : MonoBehaviour
 {
     public static UiManager Instance;
     public GameObject pieceNameObj;
     [SerializeField] private TextMeshProUGUI pieceName;
-
     public GameObject selectFramePrefab;
     private GameObject selectFrame;
+    [SerializeField] private GameObject[] resultUi;
     Vector3 point = new Vector3Int();
     // Start is called before the first frame update
     void Start()
@@ -51,11 +50,13 @@ public class UiManager : MonoBehaviour
         
     }
 
+    //選択中の駒の場所へテキストを移動
     public void SetPieceNamePos(int x, int y)
     {
         pieceNameObj.transform.position = new Vector3(x, 0, y);
     }
 
+    //選択中の駒に応じてテキストを変更
     public void SetDisplayPieceName()
     {
         switch (PieceManager.Instance.currentPieceClass)
@@ -84,6 +85,7 @@ public class UiManager : MonoBehaviour
         }
     }
 
+    //選択中のマスを強調表示
     void HighLightSelectTile(int x, int y)
     {
         selectFrame.SetActive(true);
@@ -95,6 +97,10 @@ public class UiManager : MonoBehaviour
         {
             selectFrame.transform.position = new Vector3(x, 0.05f, y);
         }
+    }
+
+    void DisplayGameOverUI()
+    {
 
     }
 }
