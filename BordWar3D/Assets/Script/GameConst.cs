@@ -50,4 +50,13 @@ public static class GameConst
         Sniper2P,
         Commander
     }
+
+    public enum MessageType
+    {
+        TurnStart,
+        SelectError,
+        AttackError,
+        MoveError,
+        Kill,
+    }
 }

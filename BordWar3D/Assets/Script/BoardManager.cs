@@ -55,7 +55,7 @@ public class BoardManager : MonoBehaviour
     {
 
     }
-    //選んだ駒は自分の駒かチェック？
+    //選んだ駒は自分の駒かチェック
     public void CheckPlayerSelect(int x, int y)
     {
         if (Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - y].infoColumns[x]) + 1 > 0)
@@ -67,11 +67,14 @@ public class BoardManager : MonoBehaviour
 
             GameManager.Instance.select = true;
         }
+        else if(Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - y].infoColumns[x]) + 1 > 0)
+        {
+
+        }
     }
 
     public void CheckEnemySelect(int x, int y)
     {
-        Debug.Log(infoRows[8 - y].infoColumns[x]);
         if (Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - y].infoColumns[x]) + 1 > 0)
         {
             PieceManager.Instance.SetCurrentPiece(infoRows[8 - y].infoColumns[x]);

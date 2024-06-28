@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     private GameConst.TurnPhase currentTurnPhese;
     [SerializeField] private GameConst.ActionType currentActionType;
     private int basePosx, basePosy, actionPosx, actionPosy;
-    private bool isGameEnd = false;
+    public bool isGameEnd = false;
     private GameConst.PlayerType winner = GameConst.PlayerType.None;
 
     void Awake()
@@ -88,13 +88,13 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("TurnPhese:Start");
         // TODO 初期化処理
-
+        UiManager.Instance.PopupMessage(GameConst.MessageType.TurnStart); 
         // TODO 仮でフェイズ遷移を追加
         DOVirtual.DelayedCall(0.5f, () => { SetTurnPhese(GameConst.TurnPhase.Action); });
     }
 
     // TODO スタートフェイズ中の処理
-    private void UpdateStartPhase() { }
+    private void UpdateStartPhase() {}
 
     // アクションフェイズの初期化処理
     private void InitializeActionPhase() { Debug.Log("TurnPhese:Action"); }
