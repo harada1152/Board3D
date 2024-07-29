@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using DG.Tweening;
 
@@ -27,6 +26,7 @@ public class GameManager : MonoBehaviour
         // TODO 先攻後攻システム？
         // TODO ゲーム開始処理演出？
         currentState = GameConst.GameState.PLAYERTURN;
+        winner=GameConst.PlayerType.None;
         beforeTurnPhase = GameConst.TurnPhase.Next; // スタートフェイズの初期化処理を有効化するため
         SetTurnPhese(GameConst.TurnPhase.Start);
     }
@@ -302,6 +302,7 @@ public class GameManager : MonoBehaviour
         }
         else if (select && currentActionType == GameConst.ActionType.Attack)
         {
+            UiManager.Instance.PopupMessage(GameConst.MessageType.Kill);
             BoardManager.Instance.PieceAttack(actionPosx, actionPosy, onCompleteCallback);
         }
         BoardManager.Instance.HideFrame();

@@ -6,8 +6,8 @@ using Image=UnityEngine.UI.Image;
 using TMPro;
 using UnityEditor;
 using DG.Tweening;
-using NUnit.Framework.Constraints;
-using Microsoft.Unity.VisualStudio.Editor;
+
+
 
 public class UiManager : MonoBehaviour
 {

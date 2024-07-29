@@ -69,7 +69,7 @@ public class BoardManager : MonoBehaviour
         }
         else if(Array.IndexOf(PieceManager.Instance.enemyPieceName, infoRows[8 - y].infoColumns[x]) + 1 > 0)
         {
-
+            UiManager.Instance.PopupMessage(GameConst.MessageType.SelectError);
         }
     }
 
@@ -82,6 +82,10 @@ public class BoardManager : MonoBehaviour
             ActiveAttackFrame(PieceManager.Instance.ReturnAttackRange(x, y), x, y);
 
             GameManager.Instance.select = true;
+        }
+        else if(Array.IndexOf(PieceManager.Instance.playerPieceName, infoRows[8 - y].infoColumns[x]) + 1 > 0)
+        {
+            UiManager.Instance.PopupMessage(GameConst.MessageType.SelectError);
         }
     }
     //移動できるかの判定
@@ -99,6 +103,7 @@ public class BoardManager : MonoBehaviour
                 error = true;
                 GameManager.Instance.select = false;
                 HideFrame();
+                UiManager.Instance.PopupMessage(GameConst.MessageType.MoveError);
                 Debug.Log("error!!");
             }
         }
@@ -115,7 +120,6 @@ public class BoardManager : MonoBehaviour
         {
             infoRows[8 - y2].infoColumns[x2] = infoRows[8 - y1].infoColumns[x1];
             infoRows[8 - y1].infoColumns[x1] = "";
-            Debug.Log("移動しました！");
         }
         error = false;
     }
@@ -135,6 +139,7 @@ public class BoardManager : MonoBehaviour
                 error = true;
                 GameManager.Instance.select = false;
                 HideFrame();
+                UiManager.Instance.PopupMessage(GameConst.MessageType.MoveError);
                 Debug.Log("error!!");
             }
         }
@@ -151,7 +156,6 @@ public class BoardManager : MonoBehaviour
         {
             infoRows[8 - y2].infoColumns[x2] = infoRows[8 - y1].infoColumns[x1];
             infoRows[8 - y1].infoColumns[x1] = "";
-            Debug.Log("移動しました！");
         }
         error = false;
     }
@@ -176,6 +180,7 @@ public class BoardManager : MonoBehaviour
                     {
                         error = true;
                         GameManager.Instance.select = false;
+                        UiManager.Instance.PopupMessage(GameConst.MessageType.AttackError);
                         HideFrame();
                     }
                 }
@@ -194,6 +199,7 @@ public class BoardManager : MonoBehaviour
                     {
                         error = true;
                         GameManager.Instance.select = false;
+                        UiManager.Instance.PopupMessage(GameConst.MessageType.AttackError);
                         HideFrame();
                     }
                 }
@@ -202,7 +208,6 @@ public class BoardManager : MonoBehaviour
         //問題がなければinfoを書き換える
         if (!error)
         {
-            Debug.Log("Attack");
             infoRows[8 - y].infoColumns[x] = "";
         }
     }
@@ -239,6 +244,7 @@ public class BoardManager : MonoBehaviour
             .SetEase(Ease.OutSine)
             .OnComplete(() =>
             {
+                if(deathObj!=null){UiManager.Instance.PopupMessage(GameConst.MessageType.Kill);}
                 Destroy(deathObj);
                 callback?.Invoke();
             });
